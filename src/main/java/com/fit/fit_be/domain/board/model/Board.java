@@ -2,9 +2,12 @@ package com.fit.fit_be.domain.board.model;
 
 import com.fit.fit_be.domain.member.model.Member;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Board {
 
@@ -17,9 +20,9 @@ public class Board {
 
     private String content;
 
-    private String lowestTemperature;
+    private Long lowestTemperature;
 
-    private String highestTemperature;
+    private Long highestTemperature;
 
     private boolean open;
 
@@ -27,4 +30,14 @@ public class Board {
 
     private RoadCondition roadCondition;
 
+    @Builder
+    public Board(Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition) {
+        this.member = member;
+        this.content = content;
+        this.lowestTemperature = lowestTemperature;
+        this.highestTemperature = highestTemperature;
+        this.open = open;
+        this.weather = weather;
+        this.roadCondition = roadCondition;
+    }
 }
