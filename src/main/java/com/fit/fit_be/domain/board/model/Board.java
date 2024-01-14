@@ -1,5 +1,6 @@
 package com.fit.fit_be.domain.board.model;
 
+import com.fit.fit_be.domain.board.dto.response.BoardResponse;
 import com.fit.fit_be.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Board {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,5 +40,16 @@ public class Board {
         this.open = open;
         this.weather = weather;
         this.roadCondition = roadCondition;
+    }
+
+    public BoardResponse toBoardResponse() {
+        return BoardResponse.builder()
+                .content(content)
+                .lowestTemperature(lowestTemperature)
+                .highestTemperature(highestTemperature)
+                .open(open)
+                .weather(weather)
+                .roadCondition(roadCondition)
+                .build();
     }
 }

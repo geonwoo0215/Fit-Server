@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class ApiResponse<T> {
+
     private T data;
 
     public ApiResponse(T data) {

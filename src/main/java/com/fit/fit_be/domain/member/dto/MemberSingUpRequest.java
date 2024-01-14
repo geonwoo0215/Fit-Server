@@ -1,22 +1,14 @@
-package com.fit.fit_be.domain.member.model;
+package com.fit.fit_be.domain.member.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fit.fit_be.domain.member.model.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class MemberSingUpRequest {
 
     private String loginId;
 
@@ -27,10 +19,14 @@ public class Member {
     private String nickname;
 
     @Builder
-    public Member(String loginId, String password, String email, String nickname) {
+    public MemberSingUpRequest(String loginId, String password, String email, String nickname) {
         this.loginId = loginId;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
+    }
+
+    public Member toMember(String encodePassword) {
+        return new Member(loginId, encodePassword, email, nickname);
     }
 }
