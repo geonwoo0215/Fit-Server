@@ -50,8 +50,7 @@ public class BoardController {
     public ResponseEntity<Void> update
             (
                     @PathVariable("boardId") Long boardId,
-                    @RequestBody UpdateBoardRequest updateBoardRequest,
-                    HttpServletRequest request
+                    @RequestBody UpdateBoardRequest updateBoardRequest
             ) {
         Long id = boardService.update(boardId, updateBoardRequest);
 

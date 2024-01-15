@@ -6,6 +6,7 @@ import com.fit.fit_be.domain.board.dto.response.BoardResponse;
 import com.fit.fit_be.domain.board.exception.BoardNotFoundException;
 import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,12 @@ public class BoardService {
     @Transactional
     public Long save(Member member, SaveBoardRequest saveBoardRequest) {
         Board board = saveBoardRequest.toBoard(member);
+        saveBoardRequest.getImageUrls().forEach(
+                imageUrl -> {
+                    Image image = new Image(board, imageUrl);
+                    board.addImage(image);
+                }
+        );
         Board saveBoard = boardRepository.save(board);
         return saveBoard.getId();
     }

@@ -1,12 +1,11 @@
-package com.fit.fit_be.domain.board.controller;
+package com.fit.fit_be.domain.cloth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
-import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
-import com.fit.fit_be.domain.board.model.Board;
-import com.fit.fit_be.domain.board.model.RoadCondition;
-import com.fit.fit_be.domain.board.model.Weather;
-import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.cloth.dto.request.SaveClothRequest;
+import com.fit.fit_be.domain.cloth.dto.request.UpdateClothRequest;
+import com.fit.fit_be.domain.cloth.model.Cloth;
+import com.fit.fit_be.domain.cloth.model.ClothType;
+import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -26,12 +25,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class BoardControllerTest {
+class ClothControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -40,7 +37,7 @@ class BoardControllerTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    BoardRepository boardRepository;
+    ClothRepository clothRepository;
 
     @Autowired
     MemberRepository memberRepository;
@@ -71,43 +68,48 @@ class BoardControllerTest {
 
     @Test
     @Transactional
-    void 게시글_저장_API_성공() throws Exception {
-
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
-        List<String> imageUrls = List.of("imageUrl");
-        SaveBoardRequest saveBoardRequest = new SaveBoardRequest(content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, imageUrls);
+    void 옷_저장_API_성공() throws Exception {
 
 
-        String json = objectMapper.writeValueAsString(saveBoardRequest);
+        String information = "information";
+        String size = "M";
+        Boolean shoe = false;
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/boards")
+        SaveClothRequest saveClothRequest = new SaveClothRequest(ClothType.TOP, information, size, shoe);
+
+        String json = objectMapper.writeValueAsString(saveClothRequest);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/cloths")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.header().string("Location", Matchers.startsWith("/boards/")))
-                .andExpect(MockMvcResultMatchers.redirectedUrlPattern("/boards/*"))
+                .andExpect(MockMvcResultMatchers.header().string("Location", Matchers.startsWith("/cloths/")))
+                .andExpect(MockMvcResultMatchers.redirectedUrlPattern("/cloths/*"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     @Transactional
-    void 게시글_아이디로_게시글_조회_API_성공() throws Exception {
+    void 옷_아이디로_옷_조회_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
+        String information = "information";
+        String size = "M";
+        Boolean shoe = false;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
-        boardRepository.save(board);
+        Cloth cloth = Cloth.builder()
+                .member(member)
+                .information(information)
+                .size(size)
+                .shoe(shoe)
+                .type(ClothType.TOP)
+                .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/boards/{boardId}", board.getId())
+        clothRepository.save(cloth);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cloths/{clothId}", cloth.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -117,56 +119,58 @@ class BoardControllerTest {
 
     @Test
     @Transactional
-    void 게시글_아이디로_게시글_수정_API_성공() throws Exception {
+    void 옷_아이디로_옷_수정_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
+        String information = "information";
+        String size = "M";
+        Boolean shoe = false;
 
-        Board board = Board.builder()
+        Cloth cloth = Cloth.builder()
                 .member(member)
-                .content(content)
-                .lowestTemperature(lowestTemperature)
-                .highestTemperature(highestTemperature)
-                .open(open)
-                .weather(Weather.RAIN)
-                .roadCondition(RoadCondition.SLIPPERY)
+                .information(information)
+                .size(size)
+                .shoe(shoe)
+                .type(ClothType.TOP)
                 .build();
 
-        boardRepository.save(board);
+        clothRepository.save(cloth);
 
-        String updateContent = "updateContent";
-        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest(updateContent, null, null, null, null, null);
+        String updateSize = "L";
+        UpdateClothRequest updateClothRequest = new UpdateClothRequest(null, null, updateSize, null);
 
-        String json = objectMapper.writeValueAsString(updateBoardRequest);
+        String json = objectMapper.writeValueAsString(updateClothRequest);
 
-        mockMvc.perform(MockMvcRequestBuilders.patch("/boards/{boardId}", board.getId())
+        mockMvc.perform(MockMvcRequestBuilders.patch("/cloths/{clothId}", cloth.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
-                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.startsWith("/boards/")))
+                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.startsWith("/cloths/")))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     @Transactional
-    void 게시글_아이디로_게시글_삭제_API_성공() throws Exception {
-        
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
+    void 옷_아이디로_옷_삭제_API_성공() throws Exception {
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
-        boardRepository.save(board);
+        String information = "information";
+        String size = "M";
+        Boolean shoe = false;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/boards/{boardId}", board.getId())
+        Cloth cloth = Cloth.builder()
+                .member(member)
+                .information(information)
+                .size(size)
+                .shoe(shoe)
+                .type(ClothType.TOP)
+                .build();
+
+        clothRepository.save(cloth);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cloths/{clothId}", cloth.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andDo(MockMvcResultHandlers.print());
     }
-
 
 }

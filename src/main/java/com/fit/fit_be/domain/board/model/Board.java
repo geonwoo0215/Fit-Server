@@ -2,18 +2,22 @@ package com.fit.fit_be.domain.board.model;
 
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.dto.response.BoardResponse;
+import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.base.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseEntity {
 
     @Id
@@ -31,9 +35,14 @@ public class Board extends BaseEntity {
 
     private boolean open;
 
+    @Enumerated(EnumType.STRING)
     private Weather weather;
 
+    @Enumerated(EnumType.STRING)
     private RoadCondition roadCondition;
+
+    @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Image> images = new ArrayList<>();
 
     @Builder
     public Board(Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition) {
@@ -44,6 +53,10 @@ public class Board extends BaseEntity {
         this.open = open;
         this.weather = weather;
         this.roadCondition = roadCondition;
+    }
+
+    public void addImage(Image image) {
+        images.add(image);
     }
 
     public BoardResponse toBoardResponse() {
