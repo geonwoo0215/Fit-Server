@@ -1,6 +1,7 @@
 package com.fit.fit_be.domain.board.service;
 
 import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
+import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.dto.response.BoardResponse;
 import com.fit.fit_be.domain.board.exception.BoardNotFoundException;
 import com.fit.fit_be.domain.board.model.Board;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BoardService {
 
     private final BoardRepository boardRepository;
@@ -28,6 +30,19 @@ public class BoardService {
                 .orElseThrow(() -> new BoardNotFoundException(id));
         BoardResponse boardResponse = board.toBoardResponse();
         return boardResponse;
+    }
+
+    @Transactional
+    public Long update(Long boardId, UpdateBoardRequest updateBoardRequest) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
+        board.updateBoard(updateBoardRequest);
+        return board.getId();
+    }
+
+    @Transactional
+    public void delete(Long boardId) {
+        boardRepository.deleteById(boardId);
     }
 
 }

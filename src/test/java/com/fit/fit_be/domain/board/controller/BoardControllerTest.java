@@ -2,6 +2,7 @@ package com.fit.fit_be.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
+import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
@@ -91,7 +92,7 @@ class BoardControllerTest {
 
     @Test
     @Transactional
-    void 게시글_아이디로_비용_조회_API_성공() throws Exception {
+    void 게시글_아이디로_게시글_조회_API_성공() throws Exception {
 
         String loginId = "loginId";
         String password = "password";
@@ -114,5 +115,76 @@ class BoardControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    @Transactional
+    void 게시글_아이디로_게시글_수정_API_성공() throws Exception {
+
+        String loginId = "loginId";
+        String password = "password";
+        String email = "email";
+        String nickname = "nickname";
+        String content = "content";
+        Long lowestTemperature = -14L;
+        Long highestTemperature = -10L;
+        boolean open = true;
+
+        Member member = Member.builder()
+                .loginId(loginId)
+                .password(password)
+                .email(email)
+                .nickname(nickname)
+                .build();
+
+        Board board = Board.builder()
+                .member(member)
+                .content(content)
+                .lowestTemperature(lowestTemperature)
+                .highestTemperature(highestTemperature)
+                .open(open)
+                .weather(Weather.RAIN)
+                .roadCondition(RoadCondition.SLIPPERY)
+                .build();
+
+        boardRepository.save(board);
+
+        String updateContent = "updateContent";
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest(updateContent, null, null, null, null, null);
+
+        String json = objectMapper.writeValueAsString(updateBoardRequest);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/boards/{boardId}", board.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.startsWith("/boards/")))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @Transactional
+    void 게시글_아이디로_게시글_삭제_API_성공() throws Exception {
+
+        String loginId = "loginId";
+        String password = "password";
+        String email = "email";
+        String nickname = "nickname";
+        String content = "content";
+        Long lowestTemperature = -14L;
+        Long highestTemperature = -10L;
+        boolean open = true;
+
+        Member member = new Member(loginId, password, email, nickname);
+
+        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        boardRepository.save(board);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/boards/{boardId}", board.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
 
 }
