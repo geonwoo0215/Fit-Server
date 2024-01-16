@@ -2,6 +2,7 @@ package com.fit.fit_be.domain.board.model;
 
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.dto.response.BoardResponse;
+import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
 import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.base.BaseEntity;
@@ -44,6 +45,9 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Image> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<BoardCloth> boardCloths = new ArrayList<>();
+
     @Builder
     public Board(Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition) {
         this.member = member;
@@ -57,6 +61,10 @@ public class Board extends BaseEntity {
 
     public void addImage(Image image) {
         images.add(image);
+    }
+
+    public void addBoardCloth(BoardCloth boardCloth) {
+        boardCloths.add(boardCloth);
     }
 
     public BoardResponse toBoardResponse() {

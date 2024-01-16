@@ -7,6 +7,9 @@ import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.cloth.model.Cloth;
+import com.fit.fit_be.domain.cloth.model.ClothType;
+import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -27,6 +30,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,11 +50,16 @@ class BoardControllerTest {
     MemberRepository memberRepository;
 
     @Autowired
+    ClothRepository clothRepository;
+
+    @Autowired
     JwtTokenProvider jwtTokenProvider;
 
     String token;
 
     Member member;
+
+    Cloth cloth;
 
     @BeforeEach
     void setUp() {
@@ -59,6 +68,10 @@ class BoardControllerTest {
         String nickname = "nickname";
         String email = "email";
 
+        String information = "information";
+        String size = "M";
+        Boolean shoe = false;
+
         member = Member.builder()
                 .loginId(loginId)
                 .password(password)
@@ -66,6 +79,16 @@ class BoardControllerTest {
                 .email(email)
                 .build();
         memberRepository.save(member);
+
+        cloth = Cloth.builder()
+                .member(member)
+                .type(ClothType.TOP)
+                .information(information)
+                .size(size)
+                .shoe(shoe)
+                .build();
+        clothRepository.save(cloth);
+
         token = jwtTokenProvider.createToken(member.getId());
     }
 
@@ -78,8 +101,8 @@ class BoardControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
         List<String> imageUrls = List.of("imageUrl");
-        SaveBoardRequest saveBoardRequest = new SaveBoardRequest(content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, imageUrls);
-
+        Map<Long, Boolean> clothAppropriate = Map.of(cloth.getId(), true);
+        SaveBoardRequest saveBoardRequest = new SaveBoardRequest(content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, clothAppropriate, imageUrls);
 
         String json = objectMapper.writeValueAsString(saveBoardRequest);
 
@@ -153,7 +176,7 @@ class BoardControllerTest {
     @Test
     @Transactional
     void 게시글_아이디로_게시글_삭제_API_성공() throws Exception {
-        
+
         String content = "content";
         Long lowestTemperature = -14L;
         Long highestTemperature = -10L;

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @NoArgsConstructor
@@ -19,22 +20,25 @@ public class SaveBoardRequest {
 
     private Long highestTemperature;
 
-    private boolean open;
+    private Boolean open;
 
     private Weather weather;
 
     private RoadCondition roadCondition;
 
+    private Map<Long, Boolean> clothAppropriates;
+
     private List<String> imageUrls;
 
 
-    public SaveBoardRequest(String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, List<String> imageUrls) {
+    public SaveBoardRequest(String content, Long lowestTemperature, Long highestTemperature, Boolean open, Weather weather, RoadCondition roadCondition, Map<Long, Boolean> clothAppropriates, List<String> imageUrls) {
         this.content = content;
         this.lowestTemperature = lowestTemperature;
         this.highestTemperature = highestTemperature;
         this.open = open;
         this.weather = weather;
         this.roadCondition = roadCondition;
+        this.clothAppropriates = clothAppropriates;
         this.imageUrls = imageUrls;
     }
 

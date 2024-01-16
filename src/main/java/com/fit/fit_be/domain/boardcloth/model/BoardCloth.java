@@ -3,8 +3,11 @@ package com.fit.fit_be.domain.boardcloth.model;
 import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.cloth.model.Cloth;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardCloth {
 
     @Id

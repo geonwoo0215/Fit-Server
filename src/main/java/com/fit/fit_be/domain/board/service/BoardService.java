@@ -6,6 +6,11 @@ import com.fit.fit_be.domain.board.dto.response.BoardResponse;
 import com.fit.fit_be.domain.board.exception.BoardNotFoundException;
 import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
+import com.fit.fit_be.domain.boardcloth.repository.BoardClothRepository;
+import com.fit.fit_be.domain.cloth.exception.ClothNotFoundException;
+import com.fit.fit_be.domain.cloth.model.Cloth;
+import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardClothRepository boardClothRepository;
+    private final ClothRepository clothRepository;
 
     @Transactional
     public Long save(Member member, SaveBoardRequest saveBoardRequest) {
@@ -28,6 +35,12 @@ public class BoardService {
                     board.addImage(image);
                 }
         );
+        saveBoardRequest.getClothAppropriates().forEach((clothId, isAppropriate) -> {
+            Cloth cloth = clothRepository.findById(clothId)
+                    .orElseThrow(() -> new ClothNotFoundException(clothId));
+            BoardCloth boardCloth = new BoardCloth(board, cloth, isAppropriate);
+            board.addBoardCloth(boardCloth);
+        });
         Board saveBoard = boardRepository.save(board);
         return saveBoard.getId();
     }
