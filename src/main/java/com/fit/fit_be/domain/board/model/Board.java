@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -75,6 +76,12 @@ public class Board extends BaseEntity {
                 .open(open)
                 .weather(weather)
                 .roadCondition(roadCondition)
+                .clothResponses(boardCloths.stream()
+                        .map(bd -> bd.getCloth().toClothResponse())
+                        .collect(Collectors.toList()))
+                .imageUrls(images.stream()
+                        .map(Image::getImageUrl)
+                        .collect(Collectors.toList()))
                 .build();
     }
 

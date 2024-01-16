@@ -7,9 +7,13 @@ import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
+import com.fit.fit_be.domain.boardcloth.repository.BoardClothRepository;
 import com.fit.fit_be.domain.cloth.model.Cloth;
 import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
+import com.fit.fit_be.domain.image.model.Image;
+import com.fit.fit_be.domain.image.repository.ImageRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -51,6 +55,12 @@ class BoardControllerTest {
 
     @Autowired
     ClothRepository clothRepository;
+
+    @Autowired
+    ImageRepository imageRepository;
+
+    @Autowired
+    BoardClothRepository boardClothRepository;
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
@@ -128,6 +138,10 @@ class BoardControllerTest {
         boolean open = true;
 
         Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        Image image = new Image(board, "imageUrl");
+        BoardCloth boardCloth = new BoardCloth(board, cloth, true);
+        board.addBoardCloth(boardCloth);
+        board.addImage(image);
         boardRepository.save(board);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/boards/{boardId}", board.getId())
