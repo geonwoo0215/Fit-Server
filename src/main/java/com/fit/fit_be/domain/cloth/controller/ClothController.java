@@ -8,6 +8,10 @@ import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +19,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ClothController {
 
     private final ClothService clothService;
@@ -29,6 +35,8 @@ public class ClothController {
                     @AuthenticationPrincipal Member member,
                     HttpServletRequest request
             ) {
+        log.info("aaa=={}", saveClothRequest.getType());
+        log.info("aaa=={}", saveClothRequest.getSize());
         Long id = clothService.save(member, saveClothRequest);
 
         return ResponseEntity
@@ -44,6 +52,19 @@ public class ClothController {
         ClothResponse response = clothService.findById(clothId);
 
         return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
+    @GetMapping(value = "/cloths", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<List<ClothResponse>>> findAll
+            (
+                    @RequestParam("type") String type,
+                    @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+                    @AuthenticationPrincipal Member member
+
+            ) {
+        List<ClothResponse> list = clothService.findAll(type, member.getId(), pageable);
+
+        return ResponseEntity.ok(new ApiResponse<>(list));
     }
 
     @PatchMapping(value = "/cloths/{clothId}", consumes = MediaType.APPLICATION_JSON_VALUE)

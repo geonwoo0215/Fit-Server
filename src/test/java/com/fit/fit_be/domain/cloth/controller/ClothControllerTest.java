@@ -73,9 +73,8 @@ class ClothControllerTest {
 
         String information = "information";
         String size = "M";
-        Boolean shoe = false;
 
-        SaveClothRequest saveClothRequest = new SaveClothRequest(ClothType.TOP, information, size, shoe);
+        SaveClothRequest saveClothRequest = new SaveClothRequest(ClothType.TOP, information, size);
 
         String json = objectMapper.writeValueAsString(saveClothRequest);
 
@@ -103,7 +102,6 @@ class ClothControllerTest {
                 .member(member)
                 .information(information)
                 .size(size)
-                .shoe(shoe)
                 .type(ClothType.TOP)
                 .build();
 
@@ -123,20 +121,18 @@ class ClothControllerTest {
 
         String information = "information";
         String size = "M";
-        Boolean shoe = false;
 
         Cloth cloth = Cloth.builder()
                 .member(member)
                 .information(information)
                 .size(size)
-                .shoe(shoe)
                 .type(ClothType.TOP)
                 .build();
 
         clothRepository.save(cloth);
 
         String updateSize = "L";
-        UpdateClothRequest updateClothRequest = new UpdateClothRequest(null, null, updateSize, null);
+        UpdateClothRequest updateClothRequest = new UpdateClothRequest(null, null, updateSize);
 
         String json = objectMapper.writeValueAsString(updateClothRequest);
 
@@ -155,13 +151,11 @@ class ClothControllerTest {
 
         String information = "information";
         String size = "M";
-        Boolean shoe = false;
 
         Cloth cloth = Cloth.builder()
                 .member(member)
                 .information(information)
                 .size(size)
-                .shoe(shoe)
                 .type(ClothType.TOP)
                 .build();
 

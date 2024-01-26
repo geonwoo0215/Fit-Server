@@ -7,20 +7,19 @@ import lombok.Getter;
 @Getter
 public class ClothResponse {
 
+    private Long id;
+
     private ClothType type;
 
     private String information;
 
     private String size;
 
-    private boolean shoe;
-
     @Builder
-    public ClothResponse(ClothType type, String information, String size, boolean shoe) {
+    public ClothResponse(Long id, ClothType type, String information, String size) {
+        this.id = id;
         this.type = type;
         this.information = information;
         this.size = size;
-        this.shoe = shoe;
     }
-
 }

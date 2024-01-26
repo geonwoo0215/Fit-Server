@@ -23,7 +23,7 @@ public class S3Controller {
     @PostMapping("/file/multiparty-files")
     public ResponseEntity<ApiResponse<List<String>>> multipleFilesUpload
             (
-                    @RequestPart List<MultipartFile> multipartFiles
+                    @RequestPart(name = "multipartFiles") List<MultipartFile> multipartFiles
             ) {
 
         List<String> uploadUrls = s3service.putObject(multipartFiles);

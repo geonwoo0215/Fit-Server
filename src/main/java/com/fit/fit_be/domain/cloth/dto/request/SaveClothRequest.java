@@ -16,21 +16,18 @@ public class SaveClothRequest {
 
     private String size;
 
-    private Boolean shoe;
-
-    public SaveClothRequest(ClothType type, String information, String size, Boolean shoe) {
+    public SaveClothRequest(ClothType type, String information, String size) {
         this.type = type;
         this.information = information;
         this.size = size;
-        this.shoe = shoe;
     }
 
     public Cloth toCloth(Member member) {
         return Cloth.builder()
                 .member(member)
+                .type(type)
                 .information(information)
                 .size(size)
-                .shoe(shoe)
                 .build();
     }
 

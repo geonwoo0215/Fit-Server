@@ -30,7 +30,7 @@ public class S3Service {
 
         multipartFiles
                 .forEach(file -> {
-                    String objectKey = "expense/" + UUID.randomUUID().toString().substring(0, 8) + file.getOriginalFilename();
+                    String objectKey = "image/" + UUID.randomUUID().toString().substring(0, 8) + file.getOriginalFilename();
                     PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(objectKey)

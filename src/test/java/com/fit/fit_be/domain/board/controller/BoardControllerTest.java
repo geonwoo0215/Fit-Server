@@ -32,6 +32,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Map;
@@ -95,7 +97,6 @@ class BoardControllerTest {
                 .type(ClothType.TOP)
                 .information(information)
                 .size(size)
-                .shoe(shoe)
                 .build();
         clothRepository.save(cloth);
 
@@ -146,6 +147,39 @@ class BoardControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/boards/{boardId}", board.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @Transactional
+    void 전채공개설정된_게시글들_조회_API_성공() throws Exception {
+
+        String content = "content";
+        Long lowestTemperature = -14L;
+        Long highestTemperature = -10L;
+        boolean open = true;
+
+        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        Image image = new Image(board, "imageUrl");
+        BoardCloth boardCloth = new BoardCloth(board, cloth, true);
+        board.addBoardCloth(boardCloth);
+        board.addImage(image);
+        boardRepository.save(board);
+
+        Integer page = 0;
+
+        Integer size = 5;
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("page", String.valueOf(page));
+        params.add("size", String.valueOf(size));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/boards", board.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .params(params)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())

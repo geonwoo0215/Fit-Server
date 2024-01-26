@@ -15,14 +15,11 @@ public class UpdateClothRequest {
 
     private String size;
 
-    private Boolean shoe;
-
     @Builder
-    public UpdateClothRequest(ClothType type, String information, String size, Boolean shoe) {
+    public UpdateClothRequest(ClothType type, String information, String size) {
         this.type = type;
         this.information = information;
         this.size = size;
-        this.shoe = shoe;
     }
 
 }

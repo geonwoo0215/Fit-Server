@@ -39,7 +39,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -69,7 +69,6 @@ public class SecurityConfig {
                             //            log.info("refresh token == {}", refreshToken);
 //                            refreshTokenService.save(userDetails.getUserId(), userDetails.getMemberRole(), refreshToken);
                             response.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
-
                             ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                                     .path("/")
                                     .sameSite("None")

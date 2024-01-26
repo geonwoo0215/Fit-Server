@@ -31,23 +31,20 @@ public class Cloth extends BaseEntity {
 
     private String size;
 
-    private boolean shoe;
-
     @Builder
-    public Cloth(Member member, ClothType type, String information, String size, boolean shoe) {
+    public Cloth(Member member, ClothType type, String information, String size) {
         this.member = member;
         this.type = type;
         this.information = information;
         this.size = size;
-        this.shoe = shoe;
     }
 
     public ClothResponse toClothResponse() {
         return ClothResponse.builder()
+                .id(id)
                 .type(type)
                 .information(information)
                 .size(size)
-                .shoe(shoe)
                 .build();
     }
 
@@ -55,7 +52,6 @@ public class Cloth extends BaseEntity {
         this.type = Objects.requireNonNullElse(updateClothRequest.getType(), this.type);
         this.information = Objects.requireNonNullElse(updateClothRequest.getInformation(), this.information);
         this.size = Objects.requireNonNullElse(updateClothRequest.getSize(), this.size);
-        this.shoe = Objects.requireNonNullElse(updateClothRequest.getShoe(), this.shoe);
     }
 
 }

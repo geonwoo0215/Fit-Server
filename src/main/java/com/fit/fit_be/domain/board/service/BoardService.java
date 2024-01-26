@@ -14,8 +14,12 @@ import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +54,14 @@ public class BoardService {
                 .orElseThrow(() -> new BoardNotFoundException(id));
         BoardResponse boardResponse = board.toBoardResponse();
         return boardResponse;
+    }
+
+    public List<BoardResponse> findAll(Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByOpenTrue(pageable);
+        List<BoardResponse> boardResponseList = boards.stream()
+                .map(Board::toBoardResponse)
+                .toList();
+        return boardResponseList;
     }
 
     @Transactional

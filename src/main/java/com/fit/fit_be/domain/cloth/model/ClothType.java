@@ -8,7 +8,10 @@ import java.util.Objects;
 
 public enum ClothType {
 
-    TOP("상의");
+    TOP("001"),
+    BOTTOM("002"),
+    ACCESSORIES("003"),
+    SHOE("004");
 
     private final String clothType;
 
