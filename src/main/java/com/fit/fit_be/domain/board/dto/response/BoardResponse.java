@@ -11,6 +11,8 @@ import java.util.List;
 @Getter
 public class BoardResponse {
 
+    private Long id;
+
     private String content;
 
     private Long lowestTemperature;
@@ -28,7 +30,8 @@ public class BoardResponse {
     private List<String> imageUrls;
 
     @Builder
-    public BoardResponse(String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, List<ClothResponse> clothResponses, List<String> imageUrls) {
+    public BoardResponse(Long id, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, List<ClothResponse> clothResponses, List<String> imageUrls) {
+        this.id = id;
         this.content = content;
         this.lowestTemperature = lowestTemperature;
         this.highestTemperature = highestTemperature;

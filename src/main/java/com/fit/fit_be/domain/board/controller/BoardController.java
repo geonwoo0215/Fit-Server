@@ -8,6 +8,7 @@ import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,7 +19,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,11 +51,11 @@ public class BoardController {
     }
 
     @GetMapping(value = "/boards", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<List<BoardResponse>>> findAll(
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAll(
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        List<BoardResponse> list = boardService.findAll(pageable);
-        return ResponseEntity.ok(new ApiResponse<>(list));
+        Page<BoardResponse> responsePage = boardService.findAll(pageable);
+        return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
 
     @PatchMapping(value = "/boards/{boardId}", consumes = MediaType.APPLICATION_JSON_VALUE)

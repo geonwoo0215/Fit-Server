@@ -70,6 +70,7 @@ public class Board extends BaseEntity {
 
     public BoardResponse toBoardResponse() {
         return BoardResponse.builder()
+                .id(id)
                 .content(content)
                 .lowestTemperature(lowestTemperature)
                 .highestTemperature(highestTemperature)

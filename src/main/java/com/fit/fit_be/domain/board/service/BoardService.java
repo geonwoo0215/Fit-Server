@@ -15,6 +15,7 @@ import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,12 +57,13 @@ public class BoardService {
         return boardResponse;
     }
 
-    public List<BoardResponse> findAll(Pageable pageable) {
+    public Page<BoardResponse> findAll(Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByOpenTrue(pageable);
         List<BoardResponse> boardResponseList = boards.stream()
                 .map(Board::toBoardResponse)
                 .toList();
-        return boardResponseList;
+        PageImpl<BoardResponse> boardResponsePage = new PageImpl<>(boardResponseList, pageable, boards.getTotalElements());
+        return boardResponsePage;
     }
 
     @Transactional
