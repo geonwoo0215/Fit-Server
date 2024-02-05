@@ -43,18 +43,20 @@ public class BoardController {
     @GetMapping(value = "/boards/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<BoardResponse>> findById
             (
-                    @PathVariable("boardId") Long boardId
+                    @PathVariable("boardId") Long boardId,
+                    @AuthenticationPrincipal Member member
             ) {
-        BoardResponse response = boardService.findById(boardId);
+        BoardResponse response = boardService.findById(member.getId(), boardId);
 
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
     @GetMapping(value = "/boards", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAll(
-            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal Member member
     ) {
-        Page<BoardResponse> responsePage = boardService.findAll(pageable);
+        Page<BoardResponse> responsePage = boardService.findAll(pageable, member.getId());
         return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
 

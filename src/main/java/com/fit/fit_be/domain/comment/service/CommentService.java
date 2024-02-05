@@ -5,7 +5,7 @@ import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
 import com.fit.fit_be.domain.comment.dto.request.CommentSaveRequest;
 import com.fit.fit_be.domain.comment.dto.response.CommentResponse;
-import com.fit.fit_be.domain.comment.exception.CommentFoundException;
+import com.fit.fit_be.domain.comment.exception.CommentNotFoundException;
 import com.fit.fit_be.domain.comment.model.Comment;
 import com.fit.fit_be.domain.comment.repository.CommentRepository;
 import com.fit.fit_be.domain.member.model.Member;
@@ -46,7 +46,7 @@ public class CommentService {
 
         } else {
             Comment parentComment = commentRepository.findById(commentSaveRequest.getCommentId())
-                    .orElseThrow(() -> new CommentFoundException(commentSaveRequest.getCommentId()));
+                    .orElseThrow(() -> new CommentNotFoundException(commentSaveRequest.getCommentId()));
 
             Comment comment = Comment.builder()
                     .member(member)

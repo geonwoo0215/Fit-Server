@@ -11,6 +11,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OptimisticLockType;
+import org.hibernate.annotations.OptimisticLocking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Getter
+@OptimisticLocking(type = OptimisticLockType.VERSION)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseEntity {
 
@@ -36,6 +39,11 @@ public class Board extends BaseEntity {
     private Long highestTemperature;
 
     private boolean open;
+
+    private int likeCount;
+
+    @Version
+    private Long version;
 
     @Enumerated(EnumType.STRING)
     private Weather weather;
@@ -58,6 +66,7 @@ public class Board extends BaseEntity {
         this.open = open;
         this.weather = weather;
         this.roadCondition = roadCondition;
+        this.likeCount = 0;
     }
 
     public void addImage(Image image) {
@@ -68,7 +77,7 @@ public class Board extends BaseEntity {
         boardCloths.add(boardCloth);
     }
 
-    public BoardResponse toBoardResponse() {
+    public BoardResponse toBoardResponse(boolean like) {
         return BoardResponse.builder()
                 .id(id)
                 .content(content)
@@ -83,6 +92,7 @@ public class Board extends BaseEntity {
                 .imageUrls(images.stream()
                         .map(Image::getImageUrl)
                         .collect(Collectors.toList()))
+                .like(like)
                 .build();
     }
 
@@ -93,5 +103,13 @@ public class Board extends BaseEntity {
         this.open = Objects.requireNonNullElse(updateBoardRequest.getOpen(), this.open);
         this.weather = Objects.requireNonNullElse(updateBoardRequest.getWeather(), this.weather);
         this.roadCondition = Objects.requireNonNullElse(updateBoardRequest.getRoadCondition(), this.roadCondition);
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
     }
 }

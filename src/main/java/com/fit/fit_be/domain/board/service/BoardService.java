@@ -7,11 +7,11 @@ import com.fit.fit_be.domain.board.exception.BoardNotFoundException;
 import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
 import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
-import com.fit.fit_be.domain.boardcloth.repository.BoardClothRepository;
 import com.fit.fit_be.domain.cloth.exception.ClothNotFoundException;
 import com.fit.fit_be.domain.cloth.model.Cloth;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.image.model.Image;
+import com.fit.fit_be.domain.like.repository.LikeRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,11 +28,12 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final BoardClothRepository boardClothRepository;
     private final ClothRepository clothRepository;
+    private final LikeRepository likeRepository;
 
     @Transactional
     public Long save(Member member, SaveBoardRequest saveBoardRequest) {
+
         Board board = saveBoardRequest.toBoard(member);
         saveBoardRequest.getImageUrls().forEach(
                 imageUrl -> {
@@ -49,18 +50,22 @@ public class BoardService {
         Board saveBoard = boardRepository.save(board);
         return saveBoard.getId();
     }
-
-    public BoardResponse findById(Long id) {
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new BoardNotFoundException(id));
-        BoardResponse boardResponse = board.toBoardResponse();
+    
+    public BoardResponse findById(Long memberId, Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
+        boolean like = likeRepository.existsByBoard_IdAndMember_Id(boardId, memberId);
+        BoardResponse boardResponse = board.toBoardResponse(like);
         return boardResponse;
     }
 
-    public Page<BoardResponse> findAll(Pageable pageable) {
+    public Page<BoardResponse> findAll(Pageable pageable, Long memberId) {
         Page<Board> boards = boardRepository.findAllByOpenTrue(pageable);
         List<BoardResponse> boardResponseList = boards.stream()
-                .map(Board::toBoardResponse)
+                .map(board -> {
+                    boolean like = likeRepository.existsByBoard_IdAndMember_Id(board.getId(), memberId);
+                    return board.toBoardResponse(like);
+                })
                 .toList();
         PageImpl<BoardResponse> boardResponsePage = new PageImpl<>(boardResponseList, pageable, boards.getTotalElements());
         return boardResponsePage;
