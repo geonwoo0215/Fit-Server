@@ -4,6 +4,7 @@ import com.fit.fit_be.domain.member.dto.MemberSingUpRequest;
 import com.fit.fit_be.domain.member.service.MemberService;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class MemberController {
     @PostMapping(value = "/members", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ApiResponse<Long>> singUp
             (
-                    @RequestBody MemberSingUpRequest memberSingUpRequest,
+                    @RequestBody @Valid MemberSingUpRequest memberSingUpRequest,
                     HttpServletRequest request
             ) {
         Long id = memberService.singUp(memberSingUpRequest);
