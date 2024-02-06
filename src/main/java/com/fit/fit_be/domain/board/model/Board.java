@@ -77,7 +77,7 @@ public class Board extends BaseEntity {
         boardCloths.add(boardCloth);
     }
 
-    public BoardResponse toBoardResponse(boolean like) {
+    public BoardResponse toBoardResponse(boolean like, Long memberId) {
         return BoardResponse.builder()
                 .id(id)
                 .content(content)
@@ -93,6 +93,8 @@ public class Board extends BaseEntity {
                         .map(Image::getImageUrl)
                         .collect(Collectors.toList()))
                 .like(like)
+                .nickname(member.getNickname())
+                .isMine(Objects.equals(member.getId(), memberId))
                 .build();
     }
 

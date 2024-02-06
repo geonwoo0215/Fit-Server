@@ -50,12 +50,12 @@ public class BoardService {
         Board saveBoard = boardRepository.save(board);
         return saveBoard.getId();
     }
-    
+
     public BoardResponse findById(Long memberId, Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
         boolean like = likeRepository.existsByBoard_IdAndMember_Id(boardId, memberId);
-        BoardResponse boardResponse = board.toBoardResponse(like);
+        BoardResponse boardResponse = board.toBoardResponse(like, memberId);
         return boardResponse;
     }
 
@@ -64,7 +64,7 @@ public class BoardService {
         List<BoardResponse> boardResponseList = boards.stream()
                 .map(board -> {
                     boolean like = likeRepository.existsByBoard_IdAndMember_Id(board.getId(), memberId);
-                    return board.toBoardResponse(like);
+                    return board.toBoardResponse(like, memberId);
                 })
                 .toList();
         PageImpl<BoardResponse> boardResponsePage = new PageImpl<>(boardResponseList, pageable, boards.getTotalElements());

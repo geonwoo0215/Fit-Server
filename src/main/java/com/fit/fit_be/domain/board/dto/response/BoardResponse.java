@@ -31,8 +31,12 @@ public class BoardResponse {
 
     private boolean like;
 
+    private String nickname;
+
+    private boolean isMine;
+
     @Builder
-    public BoardResponse(Long id, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, List<ClothResponse> clothResponses, List<String> imageUrls, boolean like) {
+    public BoardResponse(Long id, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, List<ClothResponse> clothResponses, List<String> imageUrls, boolean like, String nickname, boolean isMine) {
         this.id = id;
         this.content = content;
         this.lowestTemperature = lowestTemperature;
@@ -43,5 +47,7 @@ public class BoardResponse {
         this.clothResponses = clothResponses;
         this.imageUrls = imageUrls;
         this.like = like;
+        this.nickname = nickname;
+        this.isMine = isMine;
     }
 }

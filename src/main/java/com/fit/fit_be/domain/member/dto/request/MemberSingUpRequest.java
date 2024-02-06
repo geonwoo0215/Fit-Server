@@ -1,4 +1,4 @@
-package com.fit.fit_be.domain.member.dto;
+package com.fit.fit_be.domain.member.dto.request;
 
 import com.fit.fit_be.domain.member.model.Member;
 import jakarta.validation.constraints.Email;
