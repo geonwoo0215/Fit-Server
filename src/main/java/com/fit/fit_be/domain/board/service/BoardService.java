@@ -1,6 +1,7 @@
 package com.fit.fit_be.domain.board.service;
 
 import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
+import com.fit.fit_be.domain.board.dto.request.SearchBoardRequest;
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.dto.response.BoardResponse;
 import com.fit.fit_be.domain.board.exception.BoardNotFoundException;
@@ -59,8 +60,8 @@ public class BoardService {
         return boardResponse;
     }
 
-    public Page<BoardResponse> findAll(Pageable pageable, Long memberId) {
-        Page<Board> boards = boardRepository.findAllByOpenTrue(pageable);
+    public Page<BoardResponse> findAllByCondition(SearchBoardRequest searchBoardRequest, Pageable pageable, Long memberId) {
+        Page<Board> boards = boardRepository.findAllByCondition(searchBoardRequest, pageable);
         List<BoardResponse> boardResponseList = boards.stream()
                 .map(board -> {
                     boolean like = likeRepository.existsByBoard_IdAndMember_Id(board.getId(), memberId);

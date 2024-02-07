@@ -39,7 +39,7 @@ public class CommentController {
     }
 
     @GetMapping(value = "/boards/{boardId}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<Page<CommentResponse>>> findAllByExpenseId
+    public ResponseEntity<ApiResponse<Page<CommentResponse>>> findAllByBoardId
             (
                     @PathVariable("boardId") Long boardId,
                     @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable

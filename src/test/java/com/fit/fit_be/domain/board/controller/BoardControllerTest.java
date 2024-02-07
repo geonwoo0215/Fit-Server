@@ -25,8 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -67,6 +69,9 @@ class BoardControllerTest {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
+    @MockBean
+    JavaMailSender javaMailSender;
+
     String token;
 
     Member member;
@@ -82,7 +87,6 @@ class BoardControllerTest {
 
         String information = "information";
         String size = "M";
-        Boolean shoe = false;
 
         member = Member.builder()
                 .loginId(loginId)

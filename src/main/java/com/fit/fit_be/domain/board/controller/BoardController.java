@@ -1,6 +1,7 @@
 package com.fit.fit_be.domain.board.controller;
 
 import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
+import com.fit.fit_be.domain.board.dto.request.SearchBoardRequest;
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.dto.response.BoardResponse;
 import com.fit.fit_be.domain.board.service.BoardService;
@@ -54,9 +55,17 @@ public class BoardController {
     @GetMapping(value = "/boards", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAll(
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(value = "lowestTemperature", required = false) Long lowestTemperature,
+            @RequestParam(value = "highestTemperature", required = false) Long highestTemperature,
             @AuthenticationPrincipal Member member
     ) {
-        Page<BoardResponse> responsePage = boardService.findAll(pageable, member.getId());
+
+        SearchBoardRequest searchBoardRequest = SearchBoardRequest.builder()
+                .lowestTemperature(lowestTemperature)
+                .highestTemperature(highestTemperature)
+                .build();
+
+        Page<BoardResponse> responsePage = boardService.findAllByCondition(searchBoardRequest, pageable, member.getId());
         return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
 
