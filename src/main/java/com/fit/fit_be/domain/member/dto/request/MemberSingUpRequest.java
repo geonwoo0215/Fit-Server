@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberSingUpRequest {
 
-    @NotBlank(message = "아이디를 입력해주세요.")
-    private String loginId;
-
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 
@@ -25,14 +22,13 @@ public class MemberSingUpRequest {
     private String nickname;
 
     @Builder
-    public MemberSingUpRequest(String loginId, String password, String email, String nickname) {
-        this.loginId = loginId;
+    public MemberSingUpRequest(String password, String email, String nickname) {
         this.password = password;
         this.email = email;
         this.nickname = nickname;
     }
 
     public Member toMember(String encodePassword) {
-        return new Member(loginId, encodePassword, email, nickname);
+        return new Member(encodePassword, email, nickname);
     }
 }

@@ -19,8 +19,6 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String loginId;
-
     private String password;
 
     private String email;
@@ -28,8 +26,7 @@ public class Member extends BaseEntity {
     private String nickname;
 
     @Builder
-    public Member(String loginId, String password, String email, String nickname) {
-        this.loginId = loginId;
+    public Member(String password, String email, String nickname) {
         this.password = password;
         this.email = email;
         this.nickname = nickname;

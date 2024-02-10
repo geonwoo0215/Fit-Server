@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(form -> form
                         .loginProcessingUrl("/login")
-                        .usernameParameter("loginId")
+                        .usernameParameter("email")
                         .passwordParameter("password")
                         .successHandler((request, response, authentication) -> {
                             PrincipalDetails userDetails = (PrincipalDetails) authentication.getPrincipal();

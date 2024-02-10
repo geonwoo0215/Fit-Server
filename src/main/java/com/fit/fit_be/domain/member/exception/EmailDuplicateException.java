@@ -7,7 +7,7 @@ public class EmailDuplicateException extends CustomException {
 
     private static final HttpStatus STATUS = HttpStatus.NOT_FOUND;
 
-    private static final String MESSAGE = "좋아요 조회를 실패하였습니다.";
+    private static final String MESSAGE = "이메일로 가입한 계정이 이미 존재합니다.";
 
     public EmailDuplicateException(Object... params) {
         super(STATUS, params, MESSAGE);

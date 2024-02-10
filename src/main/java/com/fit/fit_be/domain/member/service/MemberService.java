@@ -3,6 +3,7 @@ package com.fit.fit_be.domain.member.service;
 import com.fit.fit_be.domain.member.dto.request.EmailCodeCheckRequest;
 import com.fit.fit_be.domain.member.dto.request.MemberSingUpRequest;
 import com.fit.fit_be.domain.member.exception.EmailDuplicateException;
+import com.fit.fit_be.domain.member.exception.EmailSendException;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.common.util.RedisUtil;
@@ -55,7 +56,7 @@ public class MemberService {
         try {
             javaMailSender.send(simpleMailMessage);
         } catch (MailException e) {
-            throw new RuntimeException(e);
+            throw new EmailSendException(e);
         }
 
         redisUtil.setData(email, code, 300);
