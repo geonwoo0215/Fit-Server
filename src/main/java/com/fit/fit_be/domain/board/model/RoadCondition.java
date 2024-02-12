@@ -8,7 +8,10 @@ import java.util.Objects;
 
 public enum RoadCondition {
 
-    SLIPPERY("미끄러운");
+    NORMAL("평범한"),
+    SLIPPERY("미끄러운"),
+    SNOW("눈길"),
+    SAND("모래");
 
     private final String roadCondition;
 
@@ -19,7 +22,7 @@ public enum RoadCondition {
     @JsonCreator
     public static RoadCondition of(String roadCondition) {
         return Arrays.stream(RoadCondition.values())
-                .filter(Weather -> Objects.equals(Weather.getRoadCondition(), roadCondition))
+                .filter(RoadCondition -> Objects.equals(RoadCondition.getRoadCondition(), roadCondition))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }

@@ -51,6 +51,9 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoadCondition roadCondition;
 
+    @Enumerated(EnumType.STRING)
+    private Place place;
+
     @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Image> images = new ArrayList<>();
 
@@ -58,7 +61,7 @@ public class Board extends BaseEntity {
     private List<BoardCloth> boardCloths = new ArrayList<>();
 
     @Builder
-    public Board(Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition) {
+    public Board(Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, Place place) {
         this.member = member;
         this.content = content;
         this.lowestTemperature = lowestTemperature;
@@ -66,6 +69,7 @@ public class Board extends BaseEntity {
         this.open = open;
         this.weather = weather;
         this.roadCondition = roadCondition;
+        this.place = place;
         this.likeCount = 0;
     }
 
@@ -86,6 +90,7 @@ public class Board extends BaseEntity {
                 .open(open)
                 .weather(weather)
                 .roadCondition(roadCondition)
+                .place(place)
                 .clothResponses(boardCloths.stream()
                         .map(bd -> bd.getCloth().toClothResponse())
                         .collect(Collectors.toList()))

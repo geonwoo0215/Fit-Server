@@ -1,5 +1,6 @@
 package com.fit.fit_be.domain.board.dto.response;
 
+import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.cloth.dto.response.ClothResponse;
@@ -25,6 +26,8 @@ public class BoardResponse {
 
     private RoadCondition roadCondition;
 
+    private Place place;
+
     private List<ClothResponse> clothResponses;
 
     private List<String> imageUrls;
@@ -36,7 +39,7 @@ public class BoardResponse {
     private boolean isMine;
 
     @Builder
-    public BoardResponse(Long id, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, List<ClothResponse> clothResponses, List<String> imageUrls, boolean like, String nickname, boolean isMine) {
+    public BoardResponse(Long id, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, Place place, List<ClothResponse> clothResponses, List<String> imageUrls, boolean like, String nickname, boolean isMine) {
         this.id = id;
         this.content = content;
         this.lowestTemperature = lowestTemperature;
@@ -44,6 +47,7 @@ public class BoardResponse {
         this.open = open;
         this.weather = weather;
         this.roadCondition = roadCondition;
+        this.place = place;
         this.clothResponses = clothResponses;
         this.imageUrls = imageUrls;
         this.like = like;

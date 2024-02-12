@@ -4,11 +4,15 @@ import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
 import com.fit.fit_be.domain.board.dto.request.SearchBoardRequest;
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.dto.response.BoardResponse;
+import com.fit.fit_be.domain.board.model.Place;
+import com.fit.fit_be.domain.board.model.RoadCondition;
+import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.service.BoardService;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,6 +27,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
     private final BoardService boardService;
@@ -57,13 +62,29 @@ public class BoardController {
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(value = "lowestTemperature", required = false) Long lowestTemperature,
             @RequestParam(value = "highestTemperature", required = false) Long highestTemperature,
+            @RequestParam(value = "weather", required = false) String weather,
+            @RequestParam(value = "roadCondition", required = false) String roadCondition,
+            @RequestParam(value = "place", required = false) String place,
             @AuthenticationPrincipal Member member
     ) {
 
-        SearchBoardRequest searchBoardRequest = SearchBoardRequest.builder()
-                .lowestTemperature(lowestTemperature)
-                .highestTemperature(highestTemperature)
-                .build();
+        SearchBoardRequest.SearchBoardRequestBuilder searchBoardRequestBuilder = SearchBoardRequest.searchBoardRequestBuilder(lowestTemperature, highestTemperature);
+
+        log.info("asdfas = {}", weather);
+
+        if (weather != null) {
+            searchBoardRequestBuilder.weather(Weather.of(weather));
+        }
+
+        if (place != null) {
+            searchBoardRequestBuilder.place(Place.of(place));
+        }
+
+        if (roadCondition != null) {
+            searchBoardRequestBuilder.roadCondition(RoadCondition.of(roadCondition));
+        }
+
+        SearchBoardRequest searchBoardRequest = searchBoardRequestBuilder.build();
 
         Page<BoardResponse> responsePage = boardService.findAllByCondition(searchBoardRequest, pageable, member.getId());
         return ResponseEntity.ok(new ApiResponse<>(responsePage));

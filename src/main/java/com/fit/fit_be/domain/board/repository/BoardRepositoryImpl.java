@@ -20,13 +20,18 @@ public class BoardRepositoryImpl implements BoardCustomRepository {
 
     @Override
     public Page<Board> findAllByCondition(SearchBoardRequest searchBoardRequest, Pageable pageable) {
+        BooleanBuilder conditionsBuilder = new BooleanBuilder();
+
+        conditionsBuilder.and(temperatureConditions(searchBoardRequest));
+        conditionsBuilder.and(QBoard.board.open.isTrue());
+        conditionsBuilder.and(weatherCondition(searchBoardRequest));
+        conditionsBuilder.and(roadConditionCondition(searchBoardRequest));
+        conditionsBuilder.and(placeCondition(searchBoardRequest));
+
         List<Board> content = jpaQueryFactory
                 .selectFrom(QBoard.board)
                 .from(QBoard.board)
-                .where(
-                        temperatureConditions(searchBoardRequest)
-                                .and(QBoard.board.open.isTrue())
-                )
+                .where(conditionsBuilder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -34,9 +39,7 @@ public class BoardRepositoryImpl implements BoardCustomRepository {
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(QBoard.board.count())
                 .from(QBoard.board)
-                .where(
-                        temperatureConditions(searchBoardRequest)
-                );
+                .where(conditionsBuilder);
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
@@ -55,4 +58,33 @@ public class BoardRepositoryImpl implements BoardCustomRepository {
         return builder;
     }
 
+    private BooleanBuilder weatherCondition(SearchBoardRequest searchBoardRequest) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (searchBoardRequest.getWeather() != null) {
+            builder.and(QBoard.board.weather.eq(searchBoardRequest.getWeather()));
+        }
+
+        return builder;
+    }
+
+    private BooleanBuilder roadConditionCondition(SearchBoardRequest searchBoardRequest) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (searchBoardRequest.getRoadCondition() != null) {
+            builder.and(QBoard.board.roadCondition.eq(searchBoardRequest.getRoadCondition()));
+        }
+
+        return builder;
+    }
+
+    private BooleanBuilder placeCondition(SearchBoardRequest searchBoardRequest) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (searchBoardRequest.getPlace() != null) {
+            builder.and(QBoard.board.place.eq(searchBoardRequest.getPlace()));
+        }
+
+        return builder;
+    }
 }

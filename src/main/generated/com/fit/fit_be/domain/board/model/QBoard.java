@@ -48,6 +48,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final BooleanPath open = createBoolean("open");
 
+    public final EnumPath<Place> place = createEnum("place", Place.class);
+
     public final EnumPath<RoadCondition> roadCondition = createEnum("roadCondition", RoadCondition.class);
 
     //inherited
