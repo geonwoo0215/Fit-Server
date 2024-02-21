@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class EmailDuplicateException extends CustomException {
 
-    private static final HttpStatus STATUS = HttpStatus.NOT_FOUND;
+    private static final HttpStatus STATUS = HttpStatus.BAD_REQUEST;
 
     private static final String MESSAGE = "이메일로 가입한 계정이 이미 존재합니다.";
 

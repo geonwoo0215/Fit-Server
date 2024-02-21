@@ -1,5 +1,6 @@
 package com.fit.fit_be.global.config;
 
+import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.auth.PrincipalDetails;
 import com.fit.fit_be.global.auth.jwt.JwtFilter;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -65,9 +67,8 @@ public class SecurityConfig {
                         .successHandler((request, response, authentication) -> {
                             PrincipalDetails userDetails = (PrincipalDetails) authentication.getPrincipal();
                             String accessToken = jwtTokenProvider.createToken(userDetails.getMemberId());
-                            String refreshToken = jwtTokenProvider.createRefreshToken();
-                            //            log.info("refresh token == {}", refreshToken);
-//                            refreshTokenService.save(userDetails.getUserId(), userDetails.getMemberRole(), refreshToken);
+                            String refreshToken = jwtTokenProvider.createRefreshToken(userDetails.getMemberId());
+                            log.info("refresh token == {}", refreshToken);
                             response.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
                             ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                                     .path("/")
@@ -93,8 +94,19 @@ public class SecurityConfig {
                         }))
                 .logout(logout -> logout
                         .permitAll()
-                        .logoutUrl("/member/logout"))
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .addLogoutHandler((request, response, authentication) -> {
+                            Member member = (Member) authentication.getPrincipal();
+                            jwtTokenProvider.deleteRefreshToken(member.getId());
+                            ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                                    .path("/")
+                                    .maxAge(0)
+                                    .build();
+                            response.addHeader("Set-Cookie", cookie.toString());
+                        }))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, LogoutFilter.class)
                 .cors(cors -> cors
                         .configurationSource(configurationSource()))
                 .build();

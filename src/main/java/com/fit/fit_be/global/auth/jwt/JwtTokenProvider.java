@@ -2,6 +2,7 @@ package com.fit.fit_be.global.auth.jwt;
 
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
+import com.fit.fit_be.global.common.util.RedisUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,22 +23,25 @@ public class JwtTokenProvider {
 
     private final String issuer;
     private final String secretKey;
-    private final long expirationSeconds;
+    private final long expirationHours;
     private final long refreshExpirationHours;
-
+    private final RedisUtil redisUtil;
     private final MemberRepository memberRepository;
 
     public JwtTokenProvider(
             @Value("${issuer}") String issuer,
             @Value("${secret-key}") String secretKey,
-            @Value("${expiration-seconds}") long expirationSeconds,
+            @Value("${expiration-hours}") long expirationHours,
             @Value("${refresh-expiration-hours}") long refreshExpirationHours,
+            RedisUtil redisUtil,
             MemberRepository memberRepository
+
     ) {
         this.issuer = issuer;
         this.secretKey = secretKey;
-        this.expirationSeconds = expirationSeconds;
+        this.expirationHours = expirationHours;
         this.refreshExpirationHours = refreshExpirationHours;
+        this.redisUtil = redisUtil;
         this.memberRepository = memberRepository;
     }
 
@@ -51,20 +55,30 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuer(issuer)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(expirationSeconds, ChronoUnit.SECONDS)))
+                .setExpiration(Date.from(Instant.now().plus(expirationHours, ChronoUnit.HOURS)))
                 .compact();
     }
 
-    public String createRefreshToken() {
+    public String createRefreshToken(Long memberId) {
 
-        return Jwts.builder()
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+
+        String refreshToken = Jwts.builder()
                 .signWith(new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS512.getJcaName()))
                 .setIssuer(issuer)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plus(refreshExpirationHours, ChronoUnit.HOURS)))
                 .compact();
+
+        redisUtil.setData(refreshToken, memberId.toString(), refreshExpirationHours);
+
+        return refreshToken;
     }
 
+    public void deleteRefreshToken(Long memberId) {
+        redisUtil.delete(memberId.toString());
+    }
 
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()
