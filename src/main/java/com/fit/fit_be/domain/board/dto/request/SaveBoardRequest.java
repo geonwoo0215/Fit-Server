@@ -1,6 +1,7 @@
 package com.fit.fit_be.domain.board.dto.request;
 
 import com.fit.fit_be.domain.board.model.Board;
+import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.member.model.Member;
@@ -26,18 +27,21 @@ public class SaveBoardRequest {
 
     private RoadCondition roadCondition;
 
+    private Place place;
+
     private Map<Long, Boolean> clothAppropriates;
 
     private List<String> imageUrls;
 
 
-    public SaveBoardRequest(String content, Long lowestTemperature, Long highestTemperature, Boolean open, Weather weather, RoadCondition roadCondition, Map<Long, Boolean> clothAppropriates, List<String> imageUrls) {
+    public SaveBoardRequest(String content, Long lowestTemperature, Long highestTemperature, Boolean open, Weather weather, RoadCondition roadCondition, Place place, Map<Long, Boolean> clothAppropriates, List<String> imageUrls) {
         this.content = content;
         this.lowestTemperature = lowestTemperature;
         this.highestTemperature = highestTemperature;
         this.open = open;
         this.weather = weather;
         this.roadCondition = roadCondition;
+        this.place = place;
         this.clothAppropriates = clothAppropriates;
         this.imageUrls = imageUrls;
     }
@@ -51,6 +55,7 @@ public class SaveBoardRequest {
                 .open(open)
                 .weather(weather)
                 .roadCondition(roadCondition)
+                .place(place)
                 .build();
     }
 }

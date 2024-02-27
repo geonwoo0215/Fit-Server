@@ -2,6 +2,7 @@ package com.fit.fit_be.domain.like.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit.fit_be.domain.board.model.Board;
+import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
@@ -77,7 +78,6 @@ class LikeControllerTest {
         String size = "M";
 
         member = Member.builder()
-                .loginId(loginId)
                 .password(password)
                 .nickname(nickname)
                 .email(email)
@@ -104,7 +104,7 @@ class LikeControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);
@@ -127,7 +127,7 @@ class LikeControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);

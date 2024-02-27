@@ -6,7 +6,6 @@ import com.fit.fit_be.global.auth.jwt.JwtFilter;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -27,7 +26,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Slf4j
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
@@ -57,6 +55,7 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/boards/**").authenticated()
+                        .requestMatchers("/members/my-profile").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -68,7 +67,6 @@ public class SecurityConfig {
                             PrincipalDetails userDetails = (PrincipalDetails) authentication.getPrincipal();
                             String accessToken = jwtTokenProvider.createToken(userDetails.getMemberId());
                             String refreshToken = jwtTokenProvider.createRefreshToken(userDetails.getMemberId());
-                            log.info("refresh token == {}", refreshToken);
                             response.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
                             ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                                     .path("/")

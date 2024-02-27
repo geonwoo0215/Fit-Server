@@ -73,7 +73,6 @@ class CommentControllerTest {
         String size = "M";
 
         member = Member.builder()
-                .loginId(loginId)
                 .password(password)
                 .nickname(nickname)
                 .email(email)

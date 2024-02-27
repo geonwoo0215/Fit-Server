@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.model.Board;
+import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
@@ -14,6 +15,8 @@ import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.image.repository.ImageRepository;
+import com.fit.fit_be.domain.like.model.Likes;
+import com.fit.fit_be.domain.like.repository.LikeRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -39,6 +42,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,6 +57,9 @@ class BoardControllerTest {
 
     @Autowired
     BoardRepository boardRepository;
+
+    @Autowired
+    LikeRepository likeRepository;
 
     @Autowired
     MemberRepository memberRepository;
@@ -80,7 +87,6 @@ class BoardControllerTest {
 
     @BeforeEach
     void setUp() {
-        String loginId = "loginId";
         String password = "password";
         String nickname = "nickname";
         String email = "email";
@@ -89,7 +95,6 @@ class BoardControllerTest {
         String size = "M";
 
         member = Member.builder()
-                .loginId(loginId)
                 .password(password)
                 .nickname(nickname)
                 .email(email)
@@ -142,7 +147,7 @@ class BoardControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);
@@ -166,7 +171,7 @@ class BoardControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);
@@ -182,6 +187,51 @@ class BoardControllerTest {
         params.add("size", String.valueOf(size));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/boards", board.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .params(params)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @Transactional
+    void 전채공개설정되고_1주일간좋아요증가량이높은순서로_게시글들_조회_API_성공() throws Exception {
+
+        String content = "content";
+        Long lowestTemperature = -14L;
+        Long highestTemperature = -10L;
+        boolean open = true;
+
+        Board board1 = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
+        Image image = new Image(board1, "imageUrl");
+        BoardCloth boardCloth = new BoardCloth(board1, cloth, true);
+        board1.addBoardCloth(boardCloth);
+        board1.addImage(image);
+
+        Board board2 = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
+        boardRepository.save(board1);
+        boardRepository.save(board2);
+
+        IntStream.range(1, 20)
+                .mapToObj(i -> new Likes(board1, member))
+                .forEach(likeRepository::save);
+
+        IntStream.range(1, 10)
+                .mapToObj(i -> new Likes(board2, member))
+                .forEach(likeRepository::save);
+
+
+        Integer page = 0;
+
+        Integer size = 5;
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("page", String.valueOf(page));
+        params.add("size", String.valueOf(size));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/boards/weekly-ranking")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .params(params)
                         .accept(MediaType.APPLICATION_JSON))
@@ -234,7 +284,7 @@ class BoardControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY);
+        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
         boardRepository.save(board);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/boards/{boardId}", board.getId())

@@ -66,6 +66,7 @@ public class JwtTokenProvider {
 
         String refreshToken = Jwts.builder()
                 .signWith(new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS512.getJcaName()))
+                .setClaims(claims)
                 .setIssuer(issuer)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plus(refreshExpirationHours, ChronoUnit.HOURS)))

@@ -1,5 +1,6 @@
 package com.fit.fit_be.domain.member.model;
 
+import com.fit.fit_be.domain.member.dto.response.MemberResponse;
 import com.fit.fit_be.global.common.base.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,5 +31,12 @@ public class Member extends BaseEntity {
         this.password = password;
         this.email = email;
         this.nickname = nickname;
+    }
+
+    public MemberResponse toMemberResponse() {
+        return MemberResponse.builder()
+                .email(email)
+                .nickname(nickname)
+                .build();
     }
 }

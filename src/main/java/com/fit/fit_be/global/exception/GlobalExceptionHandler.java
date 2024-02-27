@@ -1,5 +1,6 @@
 package com.fit.fit_be.global.exception;
 
+import com.fit.fit_be.global.auth.exception.RefreshTokenExpiredException;
 import com.fit.fit_be.global.common.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,21 @@ public class GlobalExceptionHandler {
         log.warn("[EXCEPTION] FIELD_ERROR [{}]", e.getBindingResult().getFieldError());
 
         return new ErrorResponse(Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> RefreshTokenExpiredException(HttpServletRequest request, CustomException e) {
+
+        log.warn("[EXCEPTION] REQUEST_URI [{}]", request.getRequestURI());
+        log.warn("[EXCEPTION] HTTP_METHOD_TYPE [{}]", request.getMethod());
+        log.warn("[EXCEPTION] EXCEPTION_TYPE [{}]", e.getClass().getSimpleName());
+        log.warn("[EXCEPTION] EXCEPTION_PARAMS [{}]", e.getParams());
+        log.warn("[EXCEPTION] EXCEPTION_MESSAGE [{}]", e.getMessage());
+        log.warn("[EXCEPTION] FIELD_ERROR [{}]", e.getClass().getSimpleName());
+
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(new ErrorResponse(e.getMessage()));
     }
 
 }

@@ -2,6 +2,7 @@ package com.fit.fit_be.domain.member.controller;
 
 import com.fit.fit_be.domain.member.dto.request.EmailCodeCheckRequest;
 import com.fit.fit_be.domain.member.dto.request.MemberSingUpRequest;
+import com.fit.fit_be.domain.member.dto.response.MemberResponse;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.service.MemberService;
 import com.fit.fit_be.global.auth.token.TokenService;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
 
     private final MemberService memberService;
@@ -36,6 +39,15 @@ public class MemberController {
         return ResponseEntity
                 .created(URI.create(request.getRequestURI() + "/" + id))
                 .body(new ApiResponse<>(id));
+    }
+
+    @GetMapping(value = "/members/my-profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<MemberResponse>> getProfile
+            (
+                    @AuthenticationPrincipal Member member
+            ) {
+        MemberResponse memberResponse = member.toMemberResponse();
+        return ResponseEntity.ok(new ApiResponse<>(memberResponse));
     }
 
     @GetMapping(value = "/members/email")
@@ -59,10 +71,9 @@ public class MemberController {
     @PostMapping(value = "/members/tokens")
     public ResponseEntity<Void> refreshToken(
             @CookieValue("refreshToken") String refreshToken,
-            @AuthenticationPrincipal Member member,
             HttpServletResponse response
     ) {
-        String accessToken = tokenService.refreshAccessToken(refreshToken, member.getId());
+        String accessToken = tokenService.refreshAccessToken(refreshToken);
         response.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

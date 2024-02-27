@@ -22,11 +22,22 @@ public class QLikes extends EntityPathBase<Likes> {
 
     public static final QLikes likes = new QLikes("likes");
 
+    public final com.fit.fit_be.global.common.base.QBaseEntity _super = new com.fit.fit_be.global.common.base.QBaseEntity(this);
+
     public final com.fit.fit_be.domain.board.model.QBoard board;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
+
+    //inherited
+    public final BooleanPath deleted = _super.deleted;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final com.fit.fit_be.domain.member.model.QMember member;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QLikes(String variable) {
         this(Likes.class, forVariable(variable), INITS);

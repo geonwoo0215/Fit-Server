@@ -4,6 +4,7 @@ import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.dto.response.BoardResponse;
 import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
 import com.fit.fit_be.domain.image.model.Image;
+import com.fit.fit_be.domain.like.model.Likes;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -59,6 +60,9 @@ public class Board extends BaseEntity {
 
     @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<BoardCloth> boardCloths = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Likes> likes = new ArrayList<>();
 
     @Builder
     public Board(Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, Place place) {

@@ -42,6 +42,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Integer> likeCount = createNumber("likeCount", Integer.class);
 
+    public final ListPath<com.fit.fit_be.domain.like.model.Likes, com.fit.fit_be.domain.like.model.QLikes> likes = this.<com.fit.fit_be.domain.like.model.Likes, com.fit.fit_be.domain.like.model.QLikes>createList("likes", com.fit.fit_be.domain.like.model.Likes.class, com.fit.fit_be.domain.like.model.QLikes.class, PathInits.DIRECT2);
+
     public final NumberPath<Long> lowestTemperature = createNumber("lowestTemperature", Long.class);
 
     public final com.fit.fit_be.domain.member.model.QMember member;

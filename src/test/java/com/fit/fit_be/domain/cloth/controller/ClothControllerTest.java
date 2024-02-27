@@ -62,7 +62,6 @@ class ClothControllerTest {
         String email = "email";
 
         member = Member.builder()
-                .loginId(loginId)
                 .password(password)
                 .nickname(nickname)
                 .email(email)
