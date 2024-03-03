@@ -1,0 +1,31 @@
+name: CI - Gradle Build
+
+# Event
+on:
+  pull_request:
+    branches: [ develop, main ]
+
+# 권한 설정
+permissions:
+  contents: read
+
+# Work
+jobs:
+  build:
+    runs-on: ubuntu-latest # 실행 환경
+    steps:
+      - uses: actions/checkout@v3 # 기본 체크아웃 동작
+      # Java version 세팅
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # graldew 실행권한 부여
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+        
+      # 빌드
+      - name: Build with Gradle
+        run: ./gradlew build
