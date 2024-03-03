@@ -122,7 +122,17 @@ class BoardControllerTest {
         boolean open = true;
         List<String> imageUrls = List.of("imageUrl");
         Map<Long, Boolean> clothAppropriate = Map.of(cloth.getId(), true);
-        SaveBoardRequest saveBoardRequest = new SaveBoardRequest(content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, clothAppropriate, imageUrls);
+        SaveBoardRequest saveBoardRequest = SaveBoardRequest.builder()
+                .content(content)
+                .lowestTemperature(lowestTemperature)
+                .highestTemperature(highestTemperature)
+                .open(open)
+                .weather(Weather.RAIN)
+                .roadCondition(RoadCondition.SLIPPERY)
+                .place(Place.OUTING)
+                .clothAppropriates(clothAppropriate)
+                .imageUrls(imageUrls)
+                .build();
 
         String json = objectMapper.writeValueAsString(saveBoardRequest);
 

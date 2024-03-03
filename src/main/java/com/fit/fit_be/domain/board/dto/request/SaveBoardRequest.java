@@ -5,6 +5,7 @@ import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.member.model.Member;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,7 +34,7 @@ public class SaveBoardRequest {
 
     private List<String> imageUrls;
 
-
+    @Builder
     public SaveBoardRequest(String content, Long lowestTemperature, Long highestTemperature, Boolean open, Weather weather, RoadCondition roadCondition, Place place, Map<Long, Boolean> clothAppropriates, List<String> imageUrls) {
         this.content = content;
         this.lowestTemperature = lowestTemperature;
