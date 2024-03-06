@@ -2,6 +2,8 @@ package com.fit.fit_be.domain.member.controller;
 
 import com.fit.fit_be.domain.member.dto.request.EmailCodeCheckRequest;
 import com.fit.fit_be.domain.member.dto.request.MemberSingUpRequest;
+import com.fit.fit_be.domain.member.dto.request.UpdateMemberRequest;
+import com.fit.fit_be.domain.member.dto.request.UpdateProfileImageRequest;
 import com.fit.fit_be.domain.member.dto.response.MemberResponse;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.service.MemberService;
@@ -53,9 +55,10 @@ public class MemberController {
     @GetMapping(value = "/members/email")
     public ResponseEntity<Void> sendEmail
             (
-                    @RequestParam("email") String email
+                    @RequestParam("email") String email,
+                    @RequestParam("type") String type
             ) {
-        memberService.sendEmail(email);
+        memberService.sendEmail(type, email);
         return ResponseEntity.ok().build();
     }
 
@@ -68,6 +71,18 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping(value = "/members/password")
+    public ResponseEntity<Void> updatePassword
+            (
+                    @RequestBody UpdateMemberRequest updateMemberRequest
+            ) {
+        memberService.updatePassword(updateMemberRequest);
+
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
+
     @PostMapping(value = "/members/tokens")
     public ResponseEntity<Void> refreshToken(
             @CookieValue("refreshToken") String refreshToken,
@@ -76,5 +91,18 @@ public class MemberController {
         String accessToken = tokenService.refreshAccessToken(refreshToken);
         response.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PatchMapping(value = "/members/profile-image")
+    public ResponseEntity<Void> updateProfileImage
+            (
+                    @AuthenticationPrincipal Member member,
+                    @RequestBody UpdateProfileImageRequest updateProfileImageRequest
+            ) {
+        memberService.updateProfileImage(member, updateProfileImageRequest);
+
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

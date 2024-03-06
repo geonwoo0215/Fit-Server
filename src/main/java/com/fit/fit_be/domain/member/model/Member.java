@@ -26,17 +26,29 @@ public class Member extends BaseEntity {
 
     private String nickname;
 
+    private String profileImageUrl;
+
     @Builder
-    public Member(String password, String email, String nickname) {
+    public Member(String password, String email, String nickname, String profileImageUrl) {
         this.password = password;
         this.email = email;
         this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
     }
 
     public MemberResponse toMemberResponse() {
         return MemberResponse.builder()
                 .email(email)
                 .nickname(nickname)
+                .profileImageUrl(profileImageUrl)
                 .build();
+    }
+
+    public void updateMemberPassword(String encodePassword) {
+        this.password = encodePassword;
+    }
+
+    public void updateMemberProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

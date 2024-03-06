@@ -272,7 +272,7 @@ class BoardControllerTest {
         boardRepository.save(board);
 
         String updateContent = "updateContent";
-        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest(updateContent, null, null, null, null, null);
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest(updateContent, null, null, null, null, null, null);
 
         String json = objectMapper.writeValueAsString(updateBoardRequest);
 
