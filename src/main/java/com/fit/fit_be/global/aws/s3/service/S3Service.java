@@ -24,7 +24,7 @@ public class S3Service {
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
-    public List<String> putObject(List<MultipartFile> multipartFiles) {
+    public List<String> putObjects(List<MultipartFile> multipartFiles) {
 
         List<String> uploadedUrls = new ArrayList<>();
 
@@ -46,6 +46,27 @@ public class S3Service {
                 });
 
         return uploadedUrls;
+    }
+
+    public String putObject(MultipartFile multipartFile) {
+
+        String uploadedUrl;
+
+        String objectKey = "image/" + UUID.randomUUID().toString().substring(0, 8) + multipartFile.getOriginalFilename();
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .contentType(multipartFile.getContentType())
+                .contentLength(multipartFile.getSize())
+                .build();
+        try {
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(multipartFile.getBytes()));
+            uploadedUrl = objectKey;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return uploadedUrl;
     }
 
 

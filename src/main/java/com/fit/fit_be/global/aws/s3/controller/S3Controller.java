@@ -26,8 +26,18 @@ public class S3Controller {
                     @RequestPart(name = "multipartFiles") List<MultipartFile> multipartFiles
             ) {
 
-        List<String> uploadUrls = s3service.putObject(multipartFiles);
+        List<String> uploadUrls = s3service.putObjects(multipartFiles);
         return new ResponseEntity<>(new ApiResponse<>(uploadUrls), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/file/profile-image")
+    public ResponseEntity<ApiResponse<String>> multipleFileUpload
+            (
+                    @RequestPart(name = "multipartFiles") MultipartFile multipartFile
+            ) {
+
+        String uploadUrl = s3service.putObject(multipartFile);
+        return new ResponseEntity<>(new ApiResponse<>(uploadUrl), HttpStatus.CREATED);
     }
 }
 

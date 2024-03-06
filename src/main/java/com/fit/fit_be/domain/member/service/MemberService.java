@@ -2,6 +2,8 @@ package com.fit.fit_be.domain.member.service;
 
 import com.fit.fit_be.domain.member.dto.request.EmailCodeCheckRequest;
 import com.fit.fit_be.domain.member.dto.request.MemberSingUpRequest;
+import com.fit.fit_be.domain.member.dto.request.UpdateMemberRequest;
+import com.fit.fit_be.domain.member.dto.request.UpdateProfileImageRequest;
 import com.fit.fit_be.domain.member.exception.EmailDuplicateException;
 import com.fit.fit_be.domain.member.exception.EmailSendException;
 import com.fit.fit_be.domain.member.model.Member;
@@ -36,9 +38,25 @@ public class MemberService {
         return saveMember.getId();
     }
 
-    public void sendEmail(String email) {
-        validateDuplicateEmail(email);
+    @Transactional
+    public void updatePassword(UpdateMemberRequest updateMemberRequest) {
+        Member member = memberRepository.findByEmail(updateMemberRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException());
+        String encodePassword = encoder.encode(updateMemberRequest.getPassword());
+        member.updateMemberPassword(encodePassword);
+    }
 
+    @Transactional
+    public void updateProfileImage(Member member, UpdateProfileImageRequest updateProfileImageRequest) {
+        member.updateMemberProfileImageUrl(updateProfileImageRequest.getProfileImage());
+    }
+
+    public void sendEmail(String type, String email) {
+        if (type.equals("signUp")) {
+            validateDuplicateEmail(email);
+        } else if (type.equals("password")) {
+            validateExistEmail(email);
+        }
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
 
@@ -84,6 +102,11 @@ public class MemberService {
         memberRepository.findByEmail(email).ifPresent(member -> {
             throw new EmailDuplicateException(email);
         });
+    }
+
+    private void validateExistEmail(String email) {
+        memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException());
     }
 
 }

@@ -35,6 +35,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath password = createString("password");
 
+    public final StringPath profileImageUrl = createString("profileImageUrl");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 

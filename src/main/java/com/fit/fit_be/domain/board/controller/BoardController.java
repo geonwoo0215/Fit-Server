@@ -12,7 +12,6 @@ import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +26,6 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class BoardController {
 
     private final BoardService boardService;
@@ -70,8 +68,6 @@ public class BoardController {
     ) {
 
         SearchBoardRequest.SearchBoardRequestBuilder searchBoardRequestBuilder = SearchBoardRequest.searchBoardRequestBuilder(lowestTemperature, highestTemperature);
-
-        log.info("asdfas = {}", weather);
 
         if (weather != null) {
             searchBoardRequestBuilder.weather(Weather.of(weather));

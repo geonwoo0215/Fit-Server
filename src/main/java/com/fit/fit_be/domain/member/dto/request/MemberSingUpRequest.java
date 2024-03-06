@@ -33,6 +33,10 @@ public class MemberSingUpRequest {
     }
 
     public Member toMember(String encodePassword) {
-        return new Member(encodePassword, email, nickname);
+        return Member.builder()
+                .password(encodePassword)
+                .email(email)
+                .nickname(nickname)
+                .build();
     }
 }

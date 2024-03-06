@@ -6,12 +6,15 @@ import lombok.Getter;
 @Getter
 public class MemberResponse {
 
+    private String profileImageUrl;
+
     private String email;
 
     private String nickname;
 
     @Builder
-    public MemberResponse(String email, String nickname) {
+    public MemberResponse(String profileImageUrl, String email, String nickname) {
+        this.profileImageUrl = profileImageUrl;
         this.email = email;
         this.nickname = nickname;
     }
