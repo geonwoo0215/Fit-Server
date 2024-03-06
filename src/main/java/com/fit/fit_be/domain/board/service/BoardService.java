@@ -15,7 +15,6 @@ import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.like.repository.LikeRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +30,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class BoardService {
 
     private final BoardRepository boardRepository;
@@ -81,8 +79,6 @@ public class BoardService {
     public Page<BoardResponse> findAllByDailyLikeCount(Pageable pageable, Long memberId) {
         LocalDateTime endDate = LocalDateTime.now();
         LocalDateTime startDate = endDate.with(LocalTime.of(0, 0));
-        log.info("start - {}", startDate);
-        log.info("end - {}", endDate);
         Page<Board> boards = boardRepository.findAllByLikeIncrease(pageable, startDate, endDate);
         List<BoardResponse> boardResponseList = boards.stream()
                 .map(board -> {
@@ -98,8 +94,6 @@ public class BoardService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime endDate = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDateTime startDate = endDate.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        log.info("start - {}", startDate);
-        log.info("end - {}", endDate);
         Page<Board> boards = boardRepository.findAllByLikeIncrease(pageable, startDate, endDate);
         List<BoardResponse> boardResponseList = boards.stream()
                 .map(board -> {

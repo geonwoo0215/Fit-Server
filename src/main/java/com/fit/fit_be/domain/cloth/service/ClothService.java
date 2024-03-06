@@ -9,7 +9,6 @@ import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class ClothService {
 
     private final ClothRepository clothRepository;

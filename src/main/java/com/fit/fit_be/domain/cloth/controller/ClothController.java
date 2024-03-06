@@ -8,7 +8,6 @@ import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -23,7 +22,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class ClothController {
 
     private final ClothService clothService;
@@ -35,8 +33,6 @@ public class ClothController {
                     @AuthenticationPrincipal Member member,
                     HttpServletRequest request
             ) {
-        log.info("aaa=={}", saveClothRequest.getType());
-        log.info("aaa=={}", saveClothRequest.getSize());
         Long id = clothService.save(member, saveClothRequest);
 
         return ResponseEntity
