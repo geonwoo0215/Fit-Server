@@ -10,7 +10,7 @@ spring:
 spring:
   config:
     activate:
-      on-profile: develop
+      on-profile: dev
     import:
       - classpath:secrets/application-dev.yml
 
@@ -19,6 +19,6 @@ spring:
 spring:
   config:
     activate:
-      on-profile: production
+      on-profile: prod
     import:
       - classpath:secrets/application-prod.yml
