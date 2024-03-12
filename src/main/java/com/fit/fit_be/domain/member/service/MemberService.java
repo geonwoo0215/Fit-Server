@@ -51,6 +51,13 @@ public class MemberService {
         member.updateMemberProfileImageUrl(updateProfileImageRequest.getProfileImage());
     }
 
+    @Transactional
+    public void delete(String password, Member member) {
+        String encodePassword = encoder.encode(password);
+        member.validatePasswordMatch(encodePassword);
+        memberRepository.delete(member);
+    }
+
     public void sendEmail(String type, String email) {
         if (type.equals("signUp")) {
             validateDuplicateEmail(email);
