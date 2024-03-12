@@ -1,9 +1,6 @@
 package com.fit.fit_be.domain.member.controller;
 
-import com.fit.fit_be.domain.member.dto.request.EmailCodeCheckRequest;
-import com.fit.fit_be.domain.member.dto.request.MemberSingUpRequest;
-import com.fit.fit_be.domain.member.dto.request.UpdateMemberRequest;
-import com.fit.fit_be.domain.member.dto.request.UpdateProfileImageRequest;
+import com.fit.fit_be.domain.member.dto.request.*;
 import com.fit.fit_be.domain.member.dto.response.MemberResponse;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.service.MemberService;
@@ -99,6 +96,18 @@ public class MemberController {
             ) {
         memberService.updateProfileImage(member, updateProfileImageRequest);
 
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
+
+    @DeleteMapping(value = "/members")
+    public ResponseEntity<Void> delete
+            (
+                    @RequestBody DeleteMemberRequest deleteMemberRequest,
+                    @AuthenticationPrincipal Member member
+            ) {
+        memberService.delete(deleteMemberRequest.getPassword(), member);
         return ResponseEntity
                 .noContent()
                 .build();

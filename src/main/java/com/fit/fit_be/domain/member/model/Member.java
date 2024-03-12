@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,5 +52,11 @@ public class Member extends BaseEntity {
 
     public void updateMemberProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public void validatePasswordMatch(String encodePassword) {
+        if (!Objects.equals(encodePassword, password)) {
+            throw new RuntimeException();
+        }
     }
 }
