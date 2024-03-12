@@ -53,8 +53,9 @@ public class MemberService {
 
     @Transactional
     public void delete(String password, Member member) {
-        String encodePassword = encoder.encode(password);
-        member.validatePasswordMatch(encodePassword);
+        if (!encoder.matches(password, member.getPassword())) {
+            throw new RuntimeException();
+        }
         memberRepository.delete(member);
     }
 
