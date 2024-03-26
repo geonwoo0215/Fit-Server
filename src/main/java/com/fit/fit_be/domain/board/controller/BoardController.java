@@ -63,7 +63,6 @@ public class BoardController {
             @RequestParam(value = "weather", required = false) String weather,
             @RequestParam(value = "roadCondition", required = false) String roadCondition,
             @RequestParam(value = "place", required = false) String place,
-            @RequestParam(value = "mine", required = false) Boolean mine,
             @AuthenticationPrincipal Member member
     ) {
 
@@ -79,10 +78,6 @@ public class BoardController {
 
         if (roadCondition != null) {
             searchBoardRequestBuilder.roadCondition(RoadCondition.of(roadCondition));
-        }
-
-        if (mine != null) {
-            searchBoardRequestBuilder.mine(mine);
         }
 
         SearchBoardRequest searchBoardRequest = searchBoardRequestBuilder.build();
