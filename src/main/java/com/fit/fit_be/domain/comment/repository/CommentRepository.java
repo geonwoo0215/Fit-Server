@@ -12,5 +12,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT COALESCE(MAX(c.groupNo), 0) FROM Comment c WHERE c.board.id = :boardId")
     Long findMaxGroupNoByBoardId(@Param("boardId") Long boardId);
 
-    Page<Comment> findAllById(@Param("boardId") Long boardId, Pageable pageable);
+    Page<Comment> findAllByBoard_Id(@Param("boardId") Long boardId, Pageable pageable);
 }

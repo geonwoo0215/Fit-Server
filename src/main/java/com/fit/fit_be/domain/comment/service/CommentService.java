@@ -64,7 +64,7 @@ public class CommentService {
     }
 
     public Page<CommentResponse> findAllByBoardId(Long boardId, Pageable pageable) {
-        Page<Comment> comments = commentRepository.findAllById(boardId, pageable);
+        Page<Comment> comments = commentRepository.findAllByBoard_Id(boardId, pageable);
         List<CommentResponse> commentResponseList = comments.stream()
                 .map(Comment::toCommentResponse)
                 .toList();
