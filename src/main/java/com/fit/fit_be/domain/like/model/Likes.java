@@ -5,7 +5,6 @@ import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,9 +23,12 @@ public class Likes extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Builder
-    public Likes(Board board, Member member) {
+    private Likes(Board board, Member member) {
         this.board = board;
         this.member = member;
+    }
+
+    public static Likes of(Board board, Member member) {
+        return new Likes(board, member);
     }
 }

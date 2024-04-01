@@ -8,6 +8,7 @@ import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,7 +19,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,16 +51,15 @@ public class ClothController {
     }
 
     @GetMapping(value = "/cloths", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<List<ClothResponse>>> findAll
+    public ResponseEntity<ApiResponse<Page<ClothResponse>>> findAllByType
             (
                     @RequestParam("type") String type,
                     @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
                     @AuthenticationPrincipal Member member
 
             ) {
-        List<ClothResponse> list = clothService.findAll(type, member.getId(), pageable);
-
-        return ResponseEntity.ok(new ApiResponse<>(list));
+        Page<ClothResponse> responsePage = clothService.findAllByType(type, member.getId(), pageable);
+        return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
 
     @PatchMapping(value = "/cloths/{clothId}", consumes = MediaType.APPLICATION_JSON_VALUE)

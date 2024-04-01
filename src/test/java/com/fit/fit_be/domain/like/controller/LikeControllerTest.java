@@ -104,7 +104,16 @@ class LikeControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
+        Board board = Board.builder()
+                .member(member)
+                .content(content)
+                .lowestTemperature(lowestTemperature)
+                .highestTemperature(highestTemperature)
+                .open(open)
+                .weather(Weather.RAIN)
+                .roadCondition(RoadCondition.SLIPPERY)
+                .place(Place.OUTING)
+                .build();
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);
@@ -127,14 +136,23 @@ class LikeControllerTest {
         Long highestTemperature = -10L;
         boolean open = true;
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
+        Board board = Board.builder()
+                .member(member)
+                .content(content)
+                .lowestTemperature(lowestTemperature)
+                .highestTemperature(highestTemperature)
+                .open(open)
+                .weather(Weather.RAIN)
+                .roadCondition(RoadCondition.SLIPPERY)
+                .place(Place.OUTING)
+                .build();
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);
         board.addImage(image);
         boardRepository.save(board);
 
-        Likes likes = new Likes(board, member);
+        Likes likes = Likes.of(board, member);
 
         likeRepository.save(likes);
 

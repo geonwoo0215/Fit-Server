@@ -86,21 +86,13 @@ public class BoardController {
         return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
 
-    @GetMapping(value = "/boards/weekly-ranking", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAllByWeeklyLikeCount(
+    @GetMapping(value = "/boards/ranking", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAllByLikeIncrease(
             @AuthenticationPrincipal Member member,
+            @RequestParam(value = "type") String type,
             @PageableDefault Pageable pageable
     ) {
-        Page<BoardResponse> responsePage = boardService.findAllByWeeklyLikeCount(pageable, member.getId());
-        return ResponseEntity.ok(new ApiResponse<>(responsePage));
-    }
-
-    @GetMapping(value = "/boards/daily-ranking", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAllByDailyLikeCount(
-            @AuthenticationPrincipal Member member,
-            @PageableDefault Pageable pageable
-    ) {
-        Page<BoardResponse> responsePage = boardService.findAllByDailyLikeCount(pageable, member.getId());
+        Page<BoardResponse> responsePage = boardService.findAllByLikeIncrease(pageable, member.getId(), type);
         return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
 

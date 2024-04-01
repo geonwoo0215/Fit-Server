@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
-public interface ClothRepository extends JpaRepository<Cloth, Long> {
+public interface ClothRepository extends JpaRepository<Cloth, Long>, ClothCustomRepository {
 
     Page<Cloth> findAllByMember_Id(@Param("memberId") Long memberId, Pageable pageable);
 

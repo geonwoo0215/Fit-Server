@@ -50,10 +50,9 @@ public class MemberController {
     @GetMapping(value = "/members/email")
     public ResponseEntity<Void> sendEmail
             (
-                    @RequestParam("email") String email,
-                    @RequestParam("type") String type
+                    @RequestParam("email") String email
             ) {
-        memberService.sendEmail(type, email);
+        memberService.sendCodeEmail(email);
         return ResponseEntity.ok().build();
     }
 

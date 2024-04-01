@@ -5,29 +5,28 @@ import com.fit.fit_be.domain.member.dto.request.MemberSingUpRequest;
 import com.fit.fit_be.domain.member.dto.request.UpdateMemberRequest;
 import com.fit.fit_be.domain.member.dto.request.UpdateProfileImageRequest;
 import com.fit.fit_be.domain.member.exception.EmailDuplicateException;
-import com.fit.fit_be.domain.member.exception.EmailSendException;
+import com.fit.fit_be.domain.member.exception.MemberNotFoundException;
+import com.fit.fit_be.domain.member.exception.PasswordMismatchException;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
+import com.fit.fit_be.global.common.util.MailService;
+import com.fit.fit_be.global.common.util.RandomCodeGenerator;
 import com.fit.fit_be.global.common.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final JavaMailSender javaMailSender;
     private final BCryptPasswordEncoder encoder;
     private final RedisUtil redisUtil;
+    private final MailService mailService;
 
 
     @Transactional
@@ -41,7 +40,7 @@ public class MemberService {
     @Transactional
     public void updatePassword(UpdateMemberRequest updateMemberRequest) {
         Member member = memberRepository.findByEmail(updateMemberRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new MemberNotFoundException(updateMemberRequest.getEmail()));
         String encodePassword = encoder.encode(updateMemberRequest.getPassword());
         member.updateMemberPassword(encodePassword);
     }
@@ -54,53 +53,25 @@ public class MemberService {
     @Transactional
     public void delete(String password, Member member) {
         if (!encoder.matches(password, member.getPassword())) {
-            throw new RuntimeException();
+            throw new PasswordMismatchException();
         }
         memberRepository.delete(member);
     }
 
-    public void sendEmail(String type, String email) {
-        if (type.equals("signUp")) {
-            validateDuplicateEmail(email);
-        } else if (type.equals("password")) {
-            validateExistEmail(email);
-        }
-        Random random = new Random();
-        random.setSeed(System.currentTimeMillis());
-
-        int randomNumber = 10000 + random.nextInt(90000);
-        String code = String.valueOf(randomNumber);
-
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        String mailSubject = "[FIT] 이메일 인증 코드";
-        String mailText = String.format("인증 코드: %s\n앱으로 돌아가서 인증을 완료해주세요", code);
-
-        simpleMailMessage.setTo(email);
-        simpleMailMessage.setSubject(mailSubject);
-        simpleMailMessage.setText(mailText);
-
-        try {
-            javaMailSender.send(simpleMailMessage);
-        } catch (MailException e) {
-            throw new EmailSendException(e);
-        }
-
-        redisUtil.setData(email, code, 300);
-
+    public void sendCodeEmail(String email) {
+        String code = RandomCodeGenerator.generateCode();
+        mailService.sendCodeEmail(code, email);
     }
 
     public void checkCode(EmailCodeCheckRequest emailCodeCheckRequest) {
 
-        String requestEmail = emailCodeCheckRequest.getEmail();
-        String requestCode = emailCodeCheckRequest.getCode();
-
-        if (!redisUtil.hasKey(requestEmail)) {
+        if (!redisUtil.hasKey(emailCodeCheckRequest.getEmail())) {
             throw new RuntimeException();
         }
 
-        String code = redisUtil.get(requestEmail);
+        String code = redisUtil.get(emailCodeCheckRequest.getEmail());
 
-        if (!Objects.equals(code, requestCode)) {
+        if (!Objects.equals(code, emailCodeCheckRequest.getCode())) {
             throw new RuntimeException();
         }
 

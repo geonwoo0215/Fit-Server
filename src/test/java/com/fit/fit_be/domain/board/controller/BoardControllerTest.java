@@ -3,6 +3,7 @@ package com.fit.fit_be.domain.board.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
+import com.fit.fit_be.domain.board.fixture.BoardFixture;
 import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
@@ -47,6 +48,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -121,23 +123,9 @@ class BoardControllerTest {
     @Transactional
     void 게시글_저장_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
         List<String> imageUrls = List.of("imageUrl");
         Map<Long, Boolean> clothAppropriate = Map.of(cloth.getId(), true);
-        SaveBoardRequest saveBoardRequest = SaveBoardRequest.builder()
-                .content(content)
-                .lowestTemperature(lowestTemperature)
-                .highestTemperature(highestTemperature)
-                .open(open)
-                .weather(Weather.RAIN)
-                .roadCondition(RoadCondition.SLIPPERY)
-                .place(Place.OUTING)
-                .clothAppropriates(clothAppropriate)
-                .imageUrls(imageUrls)
-                .build();
+        SaveBoardRequest saveBoardRequest = BoardFixture.createSaveBoardRequest(imageUrls, clothAppropriate);
 
         String json = objectMapper.writeValueAsString(saveBoardRequest);
 
@@ -170,12 +158,8 @@ class BoardControllerTest {
     @Transactional
     void 게시글_아이디로_게시글_조회_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
+        Board board = BoardFixture.createBoard(member);
 
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);
@@ -217,12 +201,7 @@ class BoardControllerTest {
     @Transactional
     void 전채공개설정된_게시글들_조회_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -5L;
-        Long highestTemperature = 0L;
-        boolean open = true;
-
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
+        Board board = BoardFixture.createBoard(member);
         Image image = new Image(board, "imageUrl");
         BoardCloth boardCloth = new BoardCloth(board, cloth, true);
         board.addBoardCloth(boardCloth);
@@ -231,6 +210,8 @@ class BoardControllerTest {
 
         Integer page = 0;
         Integer size = 5;
+        Long lowestTemperature = -5L;
+        Long highestTemperature = 0L;
         String weather = Weather.RAIN.getWeather();
         String roadCondition = RoadCondition.SLIPPERY.getRoadCondition();
         String place = Place.OUTING.getPlace();
@@ -304,135 +285,113 @@ class BoardControllerTest {
                 ));
     }
 
-//    @Test
-//    @Transactional
-//    void 전채공개설정되고_1주일간좋아요증가량이높은순서로_게시글들_조회_API_성공() throws Exception {
-//
-//        String content = "content";
-//        Long lowestTemperature = -14L;
-//        Long highestTemperature = -10L;
-//        boolean open = true;
-//
-//        Board board1 = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
-//        Image image1 = new Image(board1, "imageUrl1");
-//        BoardCloth boardCloth1 = new BoardCloth(board1, cloth, true);
-//        board1.addBoardCloth(boardCloth1);
-//        board1.addImage(image1);
-//
-//        Board board2 = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
-//        Image image2 = new Image(board2, "imageUrl2");
-//        BoardCloth boardCloth2 = new BoardCloth(board1, cloth, true);
-//        board2.addImage(image2);
-//        board2.addBoardCloth(boardCloth2);
-//        boardRepository.save(board1);
-//        boardRepository.save(board2);
-//
-//        IntStream.range(1, 20)
-//                .mapToObj(i -> {
-//                    board1.increaseLikeCount();
-//                    return new Likes(board1, member);
-//                })
-//                .forEach(likeRepository::save);
-//
-//        board1.increaseLikeCount();
-//        IntStream.range(1, 10)
-//                .mapToObj(i -> {
-//                    board2.increaseLikeCount();
-//                    return new Likes(board2, member);
-//                })
-//                .forEach(likeRepository::save);
-//
-//
-//        Integer page = 0;
-//
-//        Integer size = 5;
-//
-//        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-//        params.add("page", String.valueOf(page));
-//        params.add("size", String.valueOf(size));
-//
-//        mockMvc.perform(RestDocumentationRequestBuilders.get("/boards/weekly-ranking")
-//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-//                        .params(params)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
-//                .andDo(MockMvcResultHandlers.print())
-//                .andDo(MockMvcRestDocumentation.document("board-weekly-ranking",
-//                        RequestDocumentation.queryParameters(
-//                                RequestDocumentation.parameterWithName("size").description("페이지 크기"),
-//                                RequestDocumentation.parameterWithName("page").description("페이지 번호")
-//                        ),
-//                        PayloadDocumentation.responseFields(
-//                                PayloadDocumentation.fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].content").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].lowestTemperature").type(JsonFieldType.NUMBER).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].highestTemperature").type(JsonFieldType.NUMBER).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].open").type(JsonFieldType.BOOLEAN).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].weather").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].roadCondition").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].place").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].id").type(JsonFieldType.NUMBER).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].type").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].information").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].size").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].imageUrls").type(JsonFieldType.ARRAY).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].like").type(JsonFieldType.BOOLEAN).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].nickname").type(JsonFieldType.STRING).description("게시글 아이디"),
-//                                PayloadDocumentation.fieldWithPath("data.content[].mine").type(JsonFieldType.BOOLEAN).description("게시글 아이디"),
-//
-//                                PayloadDocumentation.fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description("페이지 오프셋"),
-//                                PayloadDocumentation.fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("페이지 번호"),
-//                                PayloadDocumentation.fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER)
-//                                        .description("한 페이지에 나타내는 원소 수"),
-//                                PayloadDocumentation.fieldWithPath("data.pageable.paged").type(JsonFieldType.BOOLEAN).description("페이지 정보 포함 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.pageable.unpaged").type(JsonFieldType.BOOLEAN).description("페이지 정보 비포함 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 사이즈"),
-//                                PayloadDocumentation.fieldWithPath("data.number").type(JsonFieldType.NUMBER).description("페이지 번호"),
-//                                PayloadDocumentation.fieldWithPath("data.pageable.sort.empty").type(JsonFieldType.BOOLEAN).description("빈 페이지 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.pageable.sort.sorted").type(JsonFieldType.BOOLEAN).description("페이지 정렬 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.pageable.sort.unsorted").type(JsonFieldType.BOOLEAN).description("페이지 비정렬 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.sort.empty").type(JsonFieldType.BOOLEAN).description("빈 페이지 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.sort.sorted").type(JsonFieldType.BOOLEAN).description("페이지 정렬 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.sort.unsorted").type(JsonFieldType.BOOLEAN).description("페이지 비정렬 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 번째 페이지 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description("페이지 원소 개수"),
-//                                PayloadDocumentation.fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("빈 페이지 여부"),
-//                                PayloadDocumentation.fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 개수"),
-//                                PayloadDocumentation.fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 데이터 개수")
-//                        )
-//                ));
-//    }
+    @Test
+    @Transactional
+    void 전채공개설정되고_1주일간좋아요증가량이높은순서로_게시글들_조회_API_성공() throws Exception {
+
+        Board board1 = BoardFixture.createBoard(member);
+
+        Image image1 = new Image(board1, "imageUrl1");
+        BoardCloth boardCloth1 = new BoardCloth(board1, cloth, true);
+        board1.addBoardCloth(boardCloth1);
+        board1.addImage(image1);
+
+        Board board2 = BoardFixture.createBoard(member);
+        Image image2 = new Image(board2, "imageUrl2");
+        BoardCloth boardCloth2 = new BoardCloth(board1, cloth, true);
+        board2.addImage(image2);
+        board2.addBoardCloth(boardCloth2);
+        boardRepository.save(board1);
+        boardRepository.save(board2);
+
+        IntStream.range(1, 20)
+                .mapToObj(i -> {
+                    board1.increaseLikeCount();
+                    return Likes.of(board1, member);
+                })
+                .forEach(likeRepository::save);
+
+        board1.increaseLikeCount();
+        IntStream.range(1, 10)
+                .mapToObj(i -> {
+                    board2.increaseLikeCount();
+                    return Likes.of(board2, member);
+                })
+                .forEach(likeRepository::save);
+
+
+        Integer page = 0;
+        Integer size = 5;
+        String type = "2";
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("page", String.valueOf(page));
+        params.add("size", String.valueOf(size));
+        params.add("type", type);
+
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/boards/ranking")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .params(params)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document("board-ranking",
+                        RequestDocumentation.queryParameters(
+                                RequestDocumentation.parameterWithName("size").description("페이지 크기"),
+                                RequestDocumentation.parameterWithName("page").description("페이지 번호"),
+                                RequestDocumentation.parameterWithName("type").description("랭킹 타입")
+                        ),
+                        PayloadDocumentation.responseFields(
+                                PayloadDocumentation.fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].content").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].lowestTemperature").type(JsonFieldType.NUMBER).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].highestTemperature").type(JsonFieldType.NUMBER).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].open").type(JsonFieldType.BOOLEAN).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].weather").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].roadCondition").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].place").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].id").type(JsonFieldType.NUMBER).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].type").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].information").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].size").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].imageUrls").type(JsonFieldType.ARRAY).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].like").type(JsonFieldType.BOOLEAN).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].nickname").type(JsonFieldType.STRING).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].mine").type(JsonFieldType.BOOLEAN).description("게시글 아이디"),
+
+                                PayloadDocumentation.fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description("페이지 오프셋"),
+                                PayloadDocumentation.fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("페이지 번호"),
+                                PayloadDocumentation.fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER)
+                                        .description("한 페이지에 나타내는 원소 수"),
+                                PayloadDocumentation.fieldWithPath("data.pageable.paged").type(JsonFieldType.BOOLEAN).description("페이지 정보 포함 여부"),
+                                PayloadDocumentation.fieldWithPath("data.pageable.unpaged").type(JsonFieldType.BOOLEAN).description("페이지 정보 비포함 여부"),
+                                PayloadDocumentation.fieldWithPath("data.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
+                                PayloadDocumentation.fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 사이즈"),
+                                PayloadDocumentation.fieldWithPath("data.number").type(JsonFieldType.NUMBER).description("페이지 번호"),
+                                PayloadDocumentation.fieldWithPath("data.pageable.sort.empty").type(JsonFieldType.BOOLEAN).description("빈 페이지 여부"),
+                                PayloadDocumentation.fieldWithPath("data.pageable.sort.sorted").type(JsonFieldType.BOOLEAN).description("페이지 정렬 여부"),
+                                PayloadDocumentation.fieldWithPath("data.pageable.sort.unsorted").type(JsonFieldType.BOOLEAN).description("페이지 비정렬 여부"),
+                                PayloadDocumentation.fieldWithPath("data.sort.empty").type(JsonFieldType.BOOLEAN).description("빈 페이지 여부"),
+                                PayloadDocumentation.fieldWithPath("data.sort.sorted").type(JsonFieldType.BOOLEAN).description("페이지 정렬 여부"),
+                                PayloadDocumentation.fieldWithPath("data.sort.unsorted").type(JsonFieldType.BOOLEAN).description("페이지 비정렬 여부"),
+                                PayloadDocumentation.fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 번째 페이지 여부"),
+                                PayloadDocumentation.fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description("페이지 원소 개수"),
+                                PayloadDocumentation.fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("빈 페이지 여부"),
+                                PayloadDocumentation.fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 개수"),
+                                PayloadDocumentation.fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 데이터 개수")
+                        )
+                ));
+    }
 
     @Test
     @Transactional
     void 게시글_아이디로_게시글_수정_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -8L;
-        boolean open = true;
-
-        Board board = Board.builder()
-                .member(member)
-                .content(content)
-                .lowestTemperature(lowestTemperature)
-                .highestTemperature(highestTemperature)
-                .open(open)
-                .weather(Weather.RAIN)
-                .roadCondition(RoadCondition.SLIPPERY)
-                .build();
-
-        Long updateLowestTemperature = -12L;
-        Long updateHighestTemperature = -6L;
-
-
+        Board board = BoardFixture.createBoard(member);
         boardRepository.save(board);
 
-        String updateContent = "updateContent";
-        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest(updateContent, updateLowestTemperature, updateHighestTemperature, false, Weather.SNOWY, RoadCondition.SAND, Place.WEDDING);
-
+        UpdateBoardRequest updateBoardRequest = BoardFixture.createUpdateBoardRequest();
         String json = objectMapper.writeValueAsString(updateBoardRequest);
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch("/boards/{boardId}", board.getId())
@@ -459,18 +418,13 @@ class BoardControllerTest {
     @Transactional
     void 게시글_아이디로_게시글_삭제_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
-
-        Board board = new Board(member, content, lowestTemperature, highestTemperature, open, Weather.RAIN, RoadCondition.SLIPPERY, Place.OUTING);
+        Board board = BoardFixture.createBoard(member);
         boardRepository.save(board);
 
         Image image = new Image(board, "imageUrl");
         imageRepository.save(image);
 
-        Likes likes = new Likes(board, member);
+        Likes likes = Likes.of(board, member);
         likeRepository.save(likes);
 
         mockMvc.perform(RestDocumentationRequestBuilders.delete("/boards/{boardId}", board.getId())

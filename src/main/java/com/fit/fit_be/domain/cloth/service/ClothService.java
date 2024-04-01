@@ -10,12 +10,12 @@ import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -38,20 +38,13 @@ public class ClothService {
         return clothResponse;
     }
 
-    public List<ClothResponse> findAll(String type, Long memberId, Pageable pageable) {
-        if (Objects.equals(type, "")) {
-            Page<Cloth> cloths = clothRepository.findAllByMember_Id(memberId, pageable);
-            List<ClothResponse> boardResponseList = cloths.stream()
-                    .map(Cloth::toClothResponse)
-                    .toList();
-            return boardResponseList;
-        }
-        ClothType clothType = ClothType.of(type);
-        Page<Cloth> cloths = clothRepository.findAllByMember_IdAndType(memberId, clothType, pageable);
+    public Page<ClothResponse> findAllByType(String clothType, Long memberId, Pageable pageable) {
+        Page<Cloth> cloths = clothRepository.findAllByType(pageable, memberId, ClothType.of(clothType));
         List<ClothResponse> boardResponseList = cloths.stream()
                 .map(Cloth::toClothResponse)
                 .toList();
-        return boardResponseList;
+        PageImpl<ClothResponse> clothResponsePage = new PageImpl<>(boardResponseList, pageable, cloths.getTotalElements());
+        return clothResponsePage;
     }
 
     @Transactional

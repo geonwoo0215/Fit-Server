@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentSaveRequest {
 
-    private Long commentId;
+    private Long parentCommentId;
 
     private String comment;
 
-    public CommentSaveRequest(Long commentId, String comment) {
-        this.commentId = commentId;
+    public CommentSaveRequest(Long parentCommentId, String comment) {
+        this.parentCommentId = parentCommentId;
         this.comment = comment;
     }
 }

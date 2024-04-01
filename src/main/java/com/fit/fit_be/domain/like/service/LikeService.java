@@ -3,7 +3,6 @@ package com.fit.fit_be.domain.like.service;
 import com.fit.fit_be.domain.board.exception.BoardNotFoundException;
 import com.fit.fit_be.domain.board.model.Board;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
-import com.fit.fit_be.domain.like.exception.LikeNotFoundException;
 import com.fit.fit_be.domain.like.model.Likes;
 import com.fit.fit_be.domain.like.repository.LikeRepository;
 import com.fit.fit_be.domain.member.model.Member;
@@ -23,22 +22,14 @@ public class LikeService {
     public void save(Long boardId, Member member) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
-
         board.increaseLikeCount();
-
-        Likes likes = Likes.builder()
-                .board(board)
-                .member(member)
-                .build();
+        Likes likes = Likes.of(board, member);
         likeRepository.save(likes);
     }
 
     @Transactional
     public void delete(Long boardId, Member member) {
-
-        if (likeRepository.deleteByBoard_IdAndMember_Id(boardId, member.getId()) == 0) {
-            throw new LikeNotFoundException(boardId, member.getId());
-        }
+        likeRepository.deleteByBoard_IdAndMember(boardId, member);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
         board.decreaseLikeCount();

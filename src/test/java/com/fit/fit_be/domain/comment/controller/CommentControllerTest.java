@@ -143,7 +143,8 @@ class CommentControllerTest {
     @Transactional
     void 댓글_조회_API_성공() throws Exception {
 
-        Comment comment = new Comment(member, board, "nickname", "comment", 0L);
+        Comment comment = Comment.of(member, board, "comment", 0L);
+
         commentRepository.save(comment);
 
 

@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardCustomRepository {
 
     @Query("SELECT b FROM Board b " +
-            "LEFT JOIN FETCH b.likes likes " +
-            "WHERE likes.createdAt BETWEEN :startDate AND :endDate " +
+            "LEFT JOIN FETCH b.likes l " +
+            "WHERE l.createdAt BETWEEN :startDate AND :endDate " +
             "ORDER BY SIZE(b.likes) DESC")
     Page<Board> findAllByLikeIncrease(Pageable pageable, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 

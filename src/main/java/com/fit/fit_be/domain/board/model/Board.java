@@ -65,7 +65,8 @@ public class Board extends BaseEntity {
     private List<Likes> likes = new ArrayList<>();
 
     @Builder
-    public Board(Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, Place place) {
+    public Board(Long id, Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, Place place) {
+        this.id = id;
         this.member = member;
         this.content = content;
         this.lowestTemperature = lowestTemperature;
@@ -85,7 +86,11 @@ public class Board extends BaseEntity {
         boardCloths.add(boardCloth);
     }
 
-    public BoardResponse toBoardResponse(boolean like, Long memberId) {
+    public void addLike(Likes like) {
+        likes.add(like);
+    }
+
+    public BoardResponse toBoardResponse(Long memberId) {
         return BoardResponse.builder()
                 .id(id)
                 .content(content)
@@ -101,7 +106,7 @@ public class Board extends BaseEntity {
                 .imageUrls(images.stream()
                         .map(Image::getImageUrl)
                         .collect(Collectors.toList()))
-                .like(like)
+                .like(likes.stream().anyMatch(like -> like.getMember().getId().equals(memberId)))
                 .nickname(member.getNickname())
                 .isMine(Objects.equals(member.getId(), memberId))
                 .build();

@@ -3,6 +3,7 @@ package com.fit.fit_be.domain.board.dto.request;
 import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ public class UpdateBoardRequest {
 
     private Place place;
 
+    @Builder
     public UpdateBoardRequest(String content, Long lowestTemperature, Long highestTemperature, Boolean open, Weather weather, RoadCondition roadCondition, Place place) {
         this.content = content;
         this.lowestTemperature = lowestTemperature;
