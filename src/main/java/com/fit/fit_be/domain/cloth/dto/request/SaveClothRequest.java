@@ -3,6 +3,7 @@ package com.fit.fit_be.domain.cloth.dto.request;
 import com.fit.fit_be.domain.cloth.model.Cloth;
 import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.member.model.Member;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ public class SaveClothRequest {
 
     private String size;
 
+    @Builder
     public SaveClothRequest(ClothType type, String information, String size) {
         this.type = type;
         this.information = information;

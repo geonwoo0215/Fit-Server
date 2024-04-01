@@ -9,15 +9,18 @@ import com.fit.fit_be.domain.board.model.Place;
 import com.fit.fit_be.domain.board.model.RoadCondition;
 import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.boardcloth.fixture.BoardClothFixture;
 import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
 import com.fit.fit_be.domain.boardcloth.repository.BoardClothRepository;
+import com.fit.fit_be.domain.cloth.fiture.ClothFixture;
 import com.fit.fit_be.domain.cloth.model.Cloth;
-import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
+import com.fit.fit_be.domain.image.fixture.ImageFixture;
 import com.fit.fit_be.domain.image.model.Image;
 import com.fit.fit_be.domain.image.repository.ImageRepository;
 import com.fit.fit_be.domain.like.model.Likes;
 import com.fit.fit_be.domain.like.repository.LikeRepository;
+import com.fit.fit_be.domain.member.fixture.MemberFixture;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -94,26 +97,10 @@ class BoardControllerTest {
 
     @BeforeEach
     void setUp() {
-        String password = "password";
-        String nickname = "nickname";
-        String email = "email";
-
-        String information = "information";
-        String size = "M";
-
-        member = Member.builder()
-                .password(password)
-                .nickname(nickname)
-                .email(email)
-                .build();
+        member = MemberFixture.createMember();
         memberRepository.save(member);
 
-        cloth = Cloth.builder()
-                .member(member)
-                .type(ClothType.TOP)
-                .information(information)
-                .size(size)
-                .build();
+        cloth = ClothFixture.createCloth(member);
         clothRepository.save(cloth);
 
         token = jwtTokenProvider.createToken(member.getId());
@@ -160,8 +147,8 @@ class BoardControllerTest {
 
         Board board = BoardFixture.createBoard(member);
 
-        Image image = new Image(board, "imageUrl");
-        BoardCloth boardCloth = new BoardCloth(board, cloth, true);
+        Image image = ImageFixture.createImage(board);
+        BoardCloth boardCloth = BoardClothFixture.createBoardCloth(board, cloth);
         board.addBoardCloth(boardCloth);
         board.addImage(image);
         boardRepository.save(board);
@@ -202,8 +189,8 @@ class BoardControllerTest {
     void 전채공개설정된_게시글들_조회_API_성공() throws Exception {
 
         Board board = BoardFixture.createBoard(member);
-        Image image = new Image(board, "imageUrl");
-        BoardCloth boardCloth = new BoardCloth(board, cloth, true);
+        Image image = ImageFixture.createImage(board);
+        BoardCloth boardCloth = BoardClothFixture.createBoardCloth(board, cloth);
         board.addBoardCloth(boardCloth);
         board.addImage(image);
         boardRepository.save(board);
@@ -291,14 +278,14 @@ class BoardControllerTest {
 
         Board board1 = BoardFixture.createBoard(member);
 
-        Image image1 = new Image(board1, "imageUrl1");
-        BoardCloth boardCloth1 = new BoardCloth(board1, cloth, true);
+        Image image1 = ImageFixture.createImage(board1);
+        BoardCloth boardCloth1 = BoardClothFixture.createBoardCloth(board1, cloth);
         board1.addBoardCloth(boardCloth1);
         board1.addImage(image1);
 
         Board board2 = BoardFixture.createBoard(member);
-        Image image2 = new Image(board2, "imageUrl2");
-        BoardCloth boardCloth2 = new BoardCloth(board1, cloth, true);
+        Image image2 = ImageFixture.createImage(board2);
+        BoardCloth boardCloth2 = BoardClothFixture.createBoardCloth(board2, cloth);
         board2.addImage(image2);
         board2.addBoardCloth(boardCloth2);
         boardRepository.save(board1);
@@ -421,7 +408,7 @@ class BoardControllerTest {
         Board board = BoardFixture.createBoard(member);
         boardRepository.save(board);
 
-        Image image = new Image(board, "imageUrl");
+        Image image = ImageFixture.createImage(board);
         imageRepository.save(image);
 
         Likes likes = Likes.of(board, member);

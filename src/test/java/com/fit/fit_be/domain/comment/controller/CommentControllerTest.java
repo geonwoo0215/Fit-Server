@@ -1,16 +1,17 @@
 package com.fit.fit_be.domain.comment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fit.fit_be.domain.board.fixture.BoardFixture;
 import com.fit.fit_be.domain.board.model.Board;
-import com.fit.fit_be.domain.board.model.RoadCondition;
-import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.cloth.fiture.ClothFixture;
 import com.fit.fit_be.domain.cloth.model.Cloth;
-import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
 import com.fit.fit_be.domain.comment.dto.request.CommentSaveRequest;
+import com.fit.fit_be.domain.comment.fixture.CommentFixture;
 import com.fit.fit_be.domain.comment.model.Comment;
 import com.fit.fit_be.domain.comment.repository.CommentRepository;
+import com.fit.fit_be.domain.member.fixture.MemberFixture;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -75,41 +76,15 @@ class CommentControllerTest {
 
     @BeforeEach
     void setUp() {
-        String loginId = "loginId";
-        String password = "password";
-        String nickname = "nickname";
-        String email = "email";
 
-        String information = "information";
-        String size = "M";
-
-        member = Member.builder()
-                .password(password)
-                .nickname(nickname)
-                .email(email)
-                .build();
+        member = MemberFixture.createMember();
         memberRepository.save(member);
-
-        cloth = Cloth.builder()
-                .member(member)
-                .type(ClothType.TOP)
-                .information(information)
-                .size(size)
-                .build();
-        clothRepository.save(cloth);
-
         token = jwtTokenProvider.createToken(member.getId());
 
-        board = Board.builder()
-                .member(member)
-                .content("content")
-                .lowestTemperature(1L)
-                .highestTemperature(8L)
-                .open(false)
-                .weather(Weather.RAIN)
-                .roadCondition(RoadCondition.SLIPPERY)
-                .build();
+        cloth = ClothFixture.createCloth(member);
+        clothRepository.save(cloth);
 
+        board = BoardFixture.createBoard(member);
         boardRepository.save(board);
     }
 
@@ -117,7 +92,7 @@ class CommentControllerTest {
     @Transactional
     void 댓글_저장_API_성공() throws Exception {
 
-        CommentSaveRequest commentSaveRequest = new CommentSaveRequest(0L, "comment");
+        CommentSaveRequest commentSaveRequest = CommentFixture.createCommentSaveRequest();
         String json = objectMapper.writeValueAsString(commentSaveRequest);
 
         mockMvc.perform(RestDocumentationRequestBuilders.post("/boards/{boardId}/comments", board.getId())
@@ -143,10 +118,8 @@ class CommentControllerTest {
     @Transactional
     void 댓글_조회_API_성공() throws Exception {
 
-        Comment comment = Comment.of(member, board, "comment", 0L);
-
+        Comment comment = CommentFixture.createComment(member, board);
         commentRepository.save(comment);
-
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/boards/{boardId}/comments", board.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)

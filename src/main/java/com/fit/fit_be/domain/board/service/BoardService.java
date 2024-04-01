@@ -45,7 +45,7 @@ public class BoardService {
         saveBoardRequest.getClothAppropriates().forEach((clothId, isAppropriate) -> {
             Cloth cloth = clothRepository.findById(clothId)
                     .orElseThrow(() -> new ClothNotFoundException(clothId));
-            BoardCloth boardCloth = new BoardCloth(board, cloth, isAppropriate);
+            BoardCloth boardCloth = BoardCloth.of(board, cloth, isAppropriate);
             board.addBoardCloth(boardCloth);
         });
     }
@@ -53,7 +53,7 @@ public class BoardService {
     private void addImage(SaveBoardRequest saveBoardRequest, Board board) {
         saveBoardRequest.getImageUrls().forEach(
                 imageUrl -> {
-                    Image image = new Image(board, imageUrl);
+                    Image image = Image.of(board, imageUrl);
                     board.addImage(image);
                 }
         );

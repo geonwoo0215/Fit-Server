@@ -21,8 +21,12 @@ public class Image extends BaseEntity {
 
     private String imageUrl;
 
-    public Image(Board board, String imageUrl) {
+    private Image(Board board, String imageUrl) {
         this.board = board;
         this.imageUrl = imageUrl;
+    }
+
+    public static Image of(Board board, String imageUrl) {
+        return new Image(board, imageUrl);
     }
 }

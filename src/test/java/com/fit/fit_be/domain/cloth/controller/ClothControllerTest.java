@@ -3,9 +3,10 @@ package com.fit.fit_be.domain.cloth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit.fit_be.domain.cloth.dto.request.SaveClothRequest;
 import com.fit.fit_be.domain.cloth.dto.request.UpdateClothRequest;
+import com.fit.fit_be.domain.cloth.fiture.ClothFixture;
 import com.fit.fit_be.domain.cloth.model.Cloth;
-import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
+import com.fit.fit_be.domain.member.fixture.MemberFixture;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -56,16 +57,7 @@ class ClothControllerTest {
 
     @BeforeEach
     void setUp() {
-        String loginId = "loginId";
-        String password = "password";
-        String nickname = "nickname";
-        String email = "email";
-
-        member = Member.builder()
-                .password(password)
-                .nickname(nickname)
-                .email(email)
-                .build();
+        member = MemberFixture.createMember();
         memberRepository.save(member);
         token = jwtTokenProvider.createToken(member.getId());
     }
@@ -74,12 +66,7 @@ class ClothControllerTest {
     @Transactional
     void 옷_저장_API_성공() throws Exception {
 
-
-        String information = "information";
-        String size = "M";
-
-        SaveClothRequest saveClothRequest = new SaveClothRequest(ClothType.TOP, information, size);
-
+        SaveClothRequest saveClothRequest = ClothFixture.createSaveClothRequest();
         String json = objectMapper.writeValueAsString(saveClothRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/cloths")
@@ -98,17 +85,7 @@ class ClothControllerTest {
     @Transactional
     void 옷_아이디로_옷_조회_API_성공() throws Exception {
 
-        String information = "information";
-        String size = "M";
-        Boolean shoe = false;
-
-        Cloth cloth = Cloth.builder()
-                .member(member)
-                .information(information)
-                .size(size)
-                .type(ClothType.TOP)
-                .build();
-
+        Cloth cloth = ClothFixture.createCloth(member);
         clothRepository.save(cloth);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/cloths/{clothId}", cloth.getId())
@@ -123,21 +100,10 @@ class ClothControllerTest {
     @Transactional
     void 옷_아이디로_옷_수정_API_성공() throws Exception {
 
-        String information = "information";
-        String size = "M";
-
-        Cloth cloth = Cloth.builder()
-                .member(member)
-                .information(information)
-                .size(size)
-                .type(ClothType.TOP)
-                .build();
-
+        Cloth cloth = ClothFixture.createCloth(member);
         clothRepository.save(cloth);
 
-        String updateSize = "L";
-        UpdateClothRequest updateClothRequest = new UpdateClothRequest(null, null, updateSize);
-
+        UpdateClothRequest updateClothRequest = ClothFixture.createUpdateClothRequest();
         String json = objectMapper.writeValueAsString(updateClothRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/cloths/{clothId}", cloth.getId())
@@ -153,16 +119,7 @@ class ClothControllerTest {
     @Transactional
     void 옷_아이디로_옷_삭제_API_성공() throws Exception {
 
-        String information = "information";
-        String size = "M";
-
-        Cloth cloth = Cloth.builder()
-                .member(member)
-                .information(information)
-                .size(size)
-                .type(ClothType.TOP)
-                .build();
-
+        Cloth cloth = ClothFixture.createCloth(member);
         clothRepository.save(cloth);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/cloths/{clothId}", cloth.getId())

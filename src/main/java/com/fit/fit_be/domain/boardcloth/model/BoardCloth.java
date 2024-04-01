@@ -24,9 +24,14 @@ public class BoardCloth {
 
     private boolean appropriate;
 
-    public BoardCloth(Board board, Cloth cloth, boolean appropriate) {
+    private BoardCloth(Board board, Cloth cloth, boolean appropriate) {
         this.board = board;
         this.cloth = cloth;
         this.appropriate = appropriate;
     }
+
+    public static BoardCloth of(Board board, Cloth cloth, boolean appropriate) {
+        return new BoardCloth(board, cloth, appropriate);
+    }
+
 }

@@ -1,18 +1,20 @@
 package com.fit.fit_be.domain.like.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fit.fit_be.domain.board.fixture.BoardFixture;
 import com.fit.fit_be.domain.board.model.Board;
-import com.fit.fit_be.domain.board.model.Place;
-import com.fit.fit_be.domain.board.model.RoadCondition;
-import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.boardcloth.fixture.BoardClothFixture;
 import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
+import com.fit.fit_be.domain.cloth.fiture.ClothFixture;
 import com.fit.fit_be.domain.cloth.model.Cloth;
-import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
+import com.fit.fit_be.domain.image.fixture.ImageFixture;
 import com.fit.fit_be.domain.image.model.Image;
+import com.fit.fit_be.domain.like.fixture.LikeFixture;
 import com.fit.fit_be.domain.like.model.Likes;
 import com.fit.fit_be.domain.like.repository.LikeRepository;
+import com.fit.fit_be.domain.member.fixture.MemberFixture;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
 import com.fit.fit_be.global.auth.jwt.JwtTokenProvider;
@@ -69,27 +71,11 @@ class LikeControllerTest {
 
     @BeforeEach
     void setUp() {
-        String loginId = "loginId";
-        String password = "password";
-        String nickname = "nickname";
-        String email = "email";
 
-        String information = "information";
-        String size = "M";
-
-        member = Member.builder()
-                .password(password)
-                .nickname(nickname)
-                .email(email)
-                .build();
+        member = MemberFixture.createMember();
         memberRepository.save(member);
 
-        cloth = Cloth.builder()
-                .member(member)
-                .type(ClothType.TOP)
-                .information(information)
-                .size(size)
-                .build();
+        cloth = ClothFixture.createCloth(member);
         clothRepository.save(cloth);
 
         token = jwtTokenProvider.createToken(member.getId());
@@ -99,23 +85,9 @@ class LikeControllerTest {
     @Transactional
     void 좋아요_저장_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
-
-        Board board = Board.builder()
-                .member(member)
-                .content(content)
-                .lowestTemperature(lowestTemperature)
-                .highestTemperature(highestTemperature)
-                .open(open)
-                .weather(Weather.RAIN)
-                .roadCondition(RoadCondition.SLIPPERY)
-                .place(Place.OUTING)
-                .build();
-        Image image = new Image(board, "imageUrl");
-        BoardCloth boardCloth = new BoardCloth(board, cloth, true);
+        Board board = BoardFixture.createBoard(member);
+        Image image = ImageFixture.createImage(board);
+        BoardCloth boardCloth = BoardClothFixture.createBoardCloth(board, cloth);
         board.addBoardCloth(boardCloth);
         board.addImage(image);
         boardRepository.save(board);
@@ -131,29 +103,14 @@ class LikeControllerTest {
     @Transactional
     void 좋아요_삭제_API_성공() throws Exception {
 
-        String content = "content";
-        Long lowestTemperature = -14L;
-        Long highestTemperature = -10L;
-        boolean open = true;
-
-        Board board = Board.builder()
-                .member(member)
-                .content(content)
-                .lowestTemperature(lowestTemperature)
-                .highestTemperature(highestTemperature)
-                .open(open)
-                .weather(Weather.RAIN)
-                .roadCondition(RoadCondition.SLIPPERY)
-                .place(Place.OUTING)
-                .build();
-        Image image = new Image(board, "imageUrl");
-        BoardCloth boardCloth = new BoardCloth(board, cloth, true);
+        Board board = BoardFixture.createBoard(member);
+        Image image = ImageFixture.createImage(board);
+        BoardCloth boardCloth = BoardClothFixture.createBoardCloth(board, cloth);
         board.addBoardCloth(boardCloth);
         board.addImage(image);
         boardRepository.save(board);
 
-        Likes likes = Likes.of(board, member);
-
+        Likes likes = LikeFixture.createLike(board, member);
         likeRepository.save(likes);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/boards/{boardId}/like", board.getId())
