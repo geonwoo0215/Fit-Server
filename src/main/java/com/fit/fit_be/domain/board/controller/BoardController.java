@@ -30,6 +30,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
+
     @PostMapping(value = "/boards", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<Long>> save
             (
@@ -38,7 +39,6 @@ public class BoardController {
                     HttpServletRequest request
             ) {
         Long id = boardService.save(member, saveBoardRequest);
-
         return ResponseEntity
                 .created(URI.create(request.getRequestURI() + "/" + id))
                 .body(new ApiResponse<>(id));
@@ -51,37 +51,21 @@ public class BoardController {
                     @AuthenticationPrincipal Member member
             ) {
         BoardResponse response = boardService.findById(member.getId(), boardId);
-
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
     @GetMapping(value = "/boards", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAll(
-            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(value = "lowestTemperature", required = false) Long lowestTemperature,
-            @RequestParam(value = "highestTemperature", required = false) Long highestTemperature,
-            @RequestParam(value = "weather", required = false) String weather,
-            @RequestParam(value = "roadCondition", required = false) String roadCondition,
-            @RequestParam(value = "place", required = false) String place,
-            @AuthenticationPrincipal Member member
-    ) {
-
-        SearchBoardRequest.SearchBoardRequestBuilder searchBoardRequestBuilder = SearchBoardRequest.searchBoardRequestBuilder(lowestTemperature, highestTemperature);
-
-        if (weather != null) {
-            searchBoardRequestBuilder.weather(Weather.of(weather));
-        }
-
-        if (place != null) {
-            searchBoardRequestBuilder.place(Place.of(place));
-        }
-
-        if (roadCondition != null) {
-            searchBoardRequestBuilder.roadCondition(RoadCondition.of(roadCondition));
-        }
-
-        SearchBoardRequest searchBoardRequest = searchBoardRequestBuilder.build();
-
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAll
+            (
+                    @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+                    @RequestParam(value = "lowestTemperature", required = false) Long lowestTemperature,
+                    @RequestParam(value = "highestTemperature", required = false) Long highestTemperature,
+                    @RequestParam(value = "weather", required = false) Weather weather,
+                    @RequestParam(value = "roadCondition", required = false) RoadCondition roadCondition,
+                    @RequestParam(value = "place", required = false) Place place,
+                    @AuthenticationPrincipal Member member
+            ) {
+        SearchBoardRequest searchBoardRequest = new SearchBoardRequest(lowestTemperature, highestTemperature, weather, roadCondition, place);
         Page<BoardResponse> responsePage = boardService.findAllByCondition(searchBoardRequest, pageable, member.getId());
         return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
@@ -103,7 +87,6 @@ public class BoardController {
                     @RequestBody UpdateBoardRequest updateBoardRequest
             ) {
         Long id = boardService.update(boardId, updateBoardRequest);
-
         return ResponseEntity
                 .noContent()
                 .header(HttpHeaders.LOCATION, "/boards/" + id)
@@ -115,9 +98,7 @@ public class BoardController {
             (
                     @PathVariable("boardId") Long boardId
             ) {
-
         boardService.delete(boardId);
-
         return ResponseEntity
                 .noContent()
                 .build();

@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public enum DateRangeType {
-    DAILY("1", LocalDateTime.now().minusDays(1).with(LocalTime.of(0, 0)), LocalDateTime.now().with(LocalTime.of(0, 0))),
-    WEEKLY("2", LocalDateTime.now().minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.of(0, 0)), LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.of(0, 0)));
+    DAILY("DAILY", LocalDateTime.now().minusDays(1).with(LocalTime.of(0, 0)), LocalDateTime.now().with(LocalTime.of(0, 0))),
+    WEEKLY("WEEKLY", LocalDateTime.now().minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.of(0, 0)), LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.of(0, 0)));
 
     private final String type;
     private final LocalDateTime startDate;

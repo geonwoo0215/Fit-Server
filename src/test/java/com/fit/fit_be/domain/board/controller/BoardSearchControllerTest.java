@@ -1,16 +1,22 @@
-package com.fit.fit_be.domain.comment.controller;
+package com.fit.fit_be.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fit.fit_be.config.DataLoader;
 import com.fit.fit_be.domain.board.fixture.BoardFixture;
 import com.fit.fit_be.domain.board.model.Board;
+import com.fit.fit_be.domain.board.model.DateRangeType;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
+import com.fit.fit_be.domain.boardcloth.fixture.BoardClothFixture;
+import com.fit.fit_be.domain.boardcloth.repository.BoardClothRepository;
 import com.fit.fit_be.domain.cloth.fiture.ClothFixture;
 import com.fit.fit_be.domain.cloth.model.Cloth;
 import com.fit.fit_be.domain.cloth.repository.ClothRepository;
-import com.fit.fit_be.domain.comment.dto.request.CommentSaveRequest;
-import com.fit.fit_be.domain.comment.fixture.CommentFixture;
-import com.fit.fit_be.domain.comment.model.Comment;
-import com.fit.fit_be.domain.comment.repository.CommentRepository;
+import com.fit.fit_be.domain.image.fixture.ImageFixture;
+import com.fit.fit_be.domain.image.model.Image;
+import com.fit.fit_be.domain.image.repository.ImageRepository;
+import com.fit.fit_be.domain.like.fixture.LikeFixture;
+import com.fit.fit_be.domain.like.model.Likes;
+import com.fit.fit_be.domain.like.repository.LikeRepository;
 import com.fit.fit_be.domain.member.fixture.MemberFixture;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.domain.member.repository.MemberRepository;
@@ -19,11 +25,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.auditing.AuditingHandler;
+import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -36,12 +46,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class CommentControllerTest {
+public class BoardSearchControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -49,13 +65,11 @@ class CommentControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    String token;
-    Member member;
-    Board board;
-    Cloth cloth;
+    @Autowired
+    BoardRepository boardRepository;
 
     @Autowired
-    CommentRepository commentRepository;
+    LikeRepository likeRepository;
 
     @Autowired
     MemberRepository memberRepository;
@@ -64,76 +78,100 @@ class CommentControllerTest {
     ClothRepository clothRepository;
 
     @Autowired
-    BoardRepository boardRepository;
+    ImageRepository imageRepository;
+
+    @Autowired
+    BoardClothRepository boardClothRepository;
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    DataLoader dataLoader;
+
     @MockBean
     JavaMailSender javaMailSender;
 
+    @MockBean
+    DateTimeProvider dateTimeProvider;
+
+    @SpyBean
+    AuditingHandler auditingHandler;
+
+    String token;
+
+    Member member;
+
+    Cloth cloth;
+
     @BeforeEach
     void setUp() {
-
         member = MemberFixture.createMember();
         memberRepository.save(member);
-        token = jwtTokenProvider.createToken(member.getId());
 
         cloth = ClothFixture.createCloth(member);
         clothRepository.save(cloth);
 
-        board = BoardFixture.createBoard(member);
-        boardRepository.save(board);
+        token = jwtTokenProvider.createToken(member.getId());
+        auditingHandler.setDateTimeProvider(dateTimeProvider);
     }
 
     @Test
     @Transactional
-    void 댓글_저장_API_성공() throws Exception {
+    void 전채공개설정되고_게시글_랭킹_조회_API_성공() throws Exception {
 
-        CommentSaveRequest commentSaveRequest = CommentFixture.createCommentSaveRequest();
-        String json = objectMapper.writeValueAsString(commentSaveRequest);
+        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.now().minusDays(1L)));
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/boards/{boardId}/comments", board.getId())
+        List<Board> boards = BoardFixture.createBoards(member, 10);
+        boards.forEach(board -> {
+            Image image = ImageFixture.createImage(board);
+            Likes likes = LikeFixture.createLike(board, member);
+            board.addLike(likes);
+            board.increaseLikeCount();
+            board.addImage(image);
+            board.addBoardCloth(BoardClothFixture.createBoardCloth(board, cloth));
+        });
+        boardRepository.saveAll(boards);
+
+        Integer page = 0;
+        Integer size = 5;
+        String type = DateRangeType.DAILY.getType();
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("page", String.valueOf(page));
+        params.add("size", String.valueOf(size));
+        params.add("type", type);
+
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/boards/ranking")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
-                .andDo(MockMvcResultHandlers.print())
-                .andDo(MockMvcRestDocumentation.document("comment-save",
-                        RequestDocumentation.pathParameters(
-                                RequestDocumentation.parameterWithName("boardId").description("게시글 아이디")
-                        ),
-                        PayloadDocumentation.requestFields(
-                                PayloadDocumentation.fieldWithPath("parentCommentId").type(JsonFieldType.NUMBER).description("댓글 아이디"),
-                                PayloadDocumentation.fieldWithPath("comment").type(JsonFieldType.STRING).description("댓글 내용")
-                        )
-                ));
-    }
-
-    @Test
-    @Transactional
-    void 댓글_조회_API_성공() throws Exception {
-
-        Comment comment = CommentFixture.createComment(member, board);
-        commentRepository.save(comment);
-
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/boards/{boardId}/comments", board.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .params(params)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
-                .andDo(MockMvcResultHandlers.print()).andDo(MockMvcRestDocumentation.document("comment-save",
-                        RequestDocumentation.pathParameters(
-                                RequestDocumentation.parameterWithName("boardId").description("게시글 아이디")
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document("board-ranking",
+                        RequestDocumentation.queryParameters(
+                                RequestDocumentation.parameterWithName("size").description("페이지 크기"),
+                                RequestDocumentation.parameterWithName("page").description("페이지 번호"),
+                                RequestDocumentation.parameterWithName("type").description("랭킹 타입")
                         ),
                         PayloadDocumentation.responseFields(
-                                PayloadDocumentation.fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("댓글 아이디"),
-                                PayloadDocumentation.fieldWithPath("data.content[].comment").type(JsonFieldType.STRING).description("댓글 내용"),
-                                PayloadDocumentation.fieldWithPath("data.content[].nickname").type(JsonFieldType.STRING).description("댓글 닉네임"),
-                                PayloadDocumentation.fieldWithPath("data.content[].parentCommentMemberNickname").type(JsonFieldType.STRING).description("부모 댓글 작성자 닉네임").optional(),
+                                PayloadDocumentation.fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("게시글 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+                                PayloadDocumentation.fieldWithPath("data.content[].lowestTemperature").type(JsonFieldType.NUMBER).description("최저온도"),
+                                PayloadDocumentation.fieldWithPath("data.content[].highestTemperature").type(JsonFieldType.NUMBER).description("최고온도"),
+                                PayloadDocumentation.fieldWithPath("data.content[].open").type(JsonFieldType.BOOLEAN).description("게시글 공개여부"),
+                                PayloadDocumentation.fieldWithPath("data.content[].weather").type(JsonFieldType.STRING).description("날씨"),
+                                PayloadDocumentation.fieldWithPath("data.content[].roadCondition").type(JsonFieldType.STRING).description("바닥상태"),
+                                PayloadDocumentation.fieldWithPath("data.content[].place").type(JsonFieldType.STRING).description("장소"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].id").type(JsonFieldType.NUMBER).description("옷 아이디"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].type").type(JsonFieldType.STRING).description("옷 타입"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].information").type(JsonFieldType.STRING).description("옷 정보"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].size").type(JsonFieldType.STRING).description("옷 사이즈"),
+                                PayloadDocumentation.fieldWithPath("data.content[].imageUrls").type(JsonFieldType.ARRAY).description("게시글 이미지 URL"),
+                                PayloadDocumentation.fieldWithPath("data.content[].like").type(JsonFieldType.BOOLEAN).description("게시글 좋아요"),
+                                PayloadDocumentation.fieldWithPath("data.content[].nickname").type(JsonFieldType.STRING).description("게시글 작성자 닉네임"),
+                                PayloadDocumentation.fieldWithPath("data.content[].mine").type(JsonFieldType.BOOLEAN).description("게시글 소유여부"),
                                 PayloadDocumentation.fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description("페이지 오프셋"),
                                 PayloadDocumentation.fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("페이지 번호"),
                                 PayloadDocumentation.fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER).description("한 페이지에 나타내는 원소 수"),
@@ -154,7 +192,8 @@ class CommentControllerTest {
                                 PayloadDocumentation.fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 개수"),
                                 PayloadDocumentation.fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 데이터 개수")
                         )
-
                 ));
     }
+
+
 }

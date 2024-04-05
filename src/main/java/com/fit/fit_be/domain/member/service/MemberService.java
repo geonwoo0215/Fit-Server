@@ -1,7 +1,7 @@
 package com.fit.fit_be.domain.member.service;
 
 import com.fit.fit_be.domain.member.dto.request.EmailCodeCheckRequest;
-import com.fit.fit_be.domain.member.dto.request.MemberSingUpRequest;
+import com.fit.fit_be.domain.member.dto.request.MemberSignUpRequest;
 import com.fit.fit_be.domain.member.dto.request.UpdateMemberRequest;
 import com.fit.fit_be.domain.member.dto.request.UpdateProfileImageRequest;
 import com.fit.fit_be.domain.member.exception.EmailDuplicateException;
@@ -28,9 +28,8 @@ public class MemberService {
     private final RedisUtil redisUtil;
     private final MailService mailService;
 
-
     @Transactional
-    public Long singUp(MemberSingUpRequest memberSingUpRequest) {
+    public Long singUp(MemberSignUpRequest memberSingUpRequest) {
         String encodePassword = encoder.encode(memberSingUpRequest.getPassword());
         Member member = memberSingUpRequest.toMember(encodePassword);
         Member saveMember = memberRepository.save(member);

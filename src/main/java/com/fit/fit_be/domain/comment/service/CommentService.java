@@ -25,10 +25,7 @@ public class CommentService {
 
     @Transactional
     public Long save(Member member, Long boardId, CommentSaveRequest commentSaveRequest) {
-
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BoardNotFoundException(boardId));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
 
         Comment comment;
 
@@ -42,11 +39,10 @@ public class CommentService {
         }
 
         return commentRepository.save(comment).getId();
-
     }
 
     public Page<CommentResponse> findAllByBoardId(Long boardId, Pageable pageable) {
-        Page<CommentResponse> comments = commentRepository.findAllByBoard_Id(boardId, pageable);
+        Page<CommentResponse> comments = commentRepository.findAllByBoardId(boardId, pageable);
         return comments;
     }
 

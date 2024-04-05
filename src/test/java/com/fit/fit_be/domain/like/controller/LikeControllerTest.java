@@ -23,19 +23,23 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LikeControllerTest {
 
@@ -92,10 +96,16 @@ class LikeControllerTest {
         board.addImage(image);
         boardRepository.save(board);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/boards/{boardId}/like", board.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders.post("/boards/{boardId}/like", board.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document("like-save",
+                        RequestDocumentation.pathParameters(
+                                RequestDocumentation.parameterWithName("boardId").description("좋아요 아이디")
+                        )
+                ));
+        ;
 
     }
 
@@ -113,10 +123,16 @@ class LikeControllerTest {
         Likes likes = LikeFixture.createLike(board, member);
         likeRepository.save(likes);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/boards/{boardId}/like", board.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders.delete("/boards/{boardId}/like", board.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document("like-delete",
+                        RequestDocumentation.pathParameters(
+                                RequestDocumentation.parameterWithName("boardId").description("좋아요 아이디")
+                        )
+                ));
+        ;
 
     }
 }

@@ -13,12 +13,12 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT COALESCE(MAX(c.groupNo), 0) FROM Comment c WHERE c.board.id = :boardId")
     Long findMaxGroupNoByBoardId(@Param("boardId") Long boardId);
 
-//    Page<Comment> findAllByBoard_Id(@Param("boardId") Long boardId, Pageable pageable);
-
     @Query("SELECT new com.fit.fit_be.domain.comment.dto.response.CommentResponse(c.id, c.comment, c.member.nickname, p.member.nickname) " +
             "FROM Comment c " +
             "LEFT JOIN Comment p ON c.parentCommentId = p.id " +
+            "LEFT JOIN Member m1 ON m1.id = c.member.id " +
+            "LEFT JOIN Member m2 ON m2.id = p.member.id " +
             "WHERE c.board.id = :boardId")
-    Page<CommentResponse> findAllByBoard_Id(@Param("boardId") Long boardId, Pageable pageable);
+    Page<CommentResponse> findAllByBoardId(@Param("boardId") Long boardId, Pageable pageable);
 
 }

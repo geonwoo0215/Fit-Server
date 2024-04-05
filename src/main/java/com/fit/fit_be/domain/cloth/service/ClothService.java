@@ -32,14 +32,13 @@ public class ClothService {
     }
 
     public ClothResponse findById(Long clothId) {
-        Cloth cloth = clothRepository.findById(clothId)
-                .orElseThrow(() -> new ClothNotFoundException(clothId));
+        Cloth cloth = clothRepository.findById(clothId).orElseThrow(() -> new ClothNotFoundException(clothId));
         ClothResponse clothResponse = cloth.toClothResponse();
         return clothResponse;
     }
 
-    public Page<ClothResponse> findAllByType(String clothType, Long memberId, Pageable pageable) {
-        Page<Cloth> cloths = clothRepository.findAllByType(pageable, memberId, ClothType.of(clothType));
+    public Page<ClothResponse> findAllByType(ClothType clothType, Long memberId, Pageable pageable) {
+        Page<Cloth> cloths = clothRepository.findAllByType(pageable, memberId, clothType);
         List<ClothResponse> boardResponseList = cloths.stream()
                 .map(Cloth::toClothResponse)
                 .toList();
@@ -49,8 +48,7 @@ public class ClothService {
 
     @Transactional
     public Long update(Long clothId, UpdateClothRequest updateClothRequest) {
-        Cloth cloth = clothRepository.findById(clothId)
-                .orElseThrow(() -> new ClothNotFoundException(clothId));
+        Cloth cloth = clothRepository.findById(clothId).orElseThrow(() -> new ClothNotFoundException(clothId));
         cloth.updateCloth(updateClothRequest);
         return cloth.getId();
     }
@@ -59,6 +57,5 @@ public class ClothService {
     public void delete(Long clothId) {
         clothRepository.deleteById(clothId);
     }
-
 
 }

@@ -20,8 +20,7 @@ public class LikeService {
 
     @Transactional
     public void save(Long boardId, Member member) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BoardNotFoundException(boardId));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
         board.increaseLikeCount();
         Likes likes = Likes.of(board, member);
         likeRepository.save(likes);
@@ -30,8 +29,7 @@ public class LikeService {
     @Transactional
     public void delete(Long boardId, Member member) {
         likeRepository.deleteByBoard_IdAndMember(boardId, member);
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(BoardNotFoundException::new);
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
         board.decreaseLikeCount();
     }
 

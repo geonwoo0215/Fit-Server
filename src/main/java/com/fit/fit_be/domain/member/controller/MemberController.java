@@ -29,7 +29,7 @@ public class MemberController {
     @PostMapping(value = "/members", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<Long>> singUp
             (
-                    @RequestBody @Valid MemberSingUpRequest memberSingUpRequest,
+                    @RequestBody @Valid MemberSignUpRequest memberSingUpRequest,
                     HttpServletRequest request
             ) {
         Long id = memberService.singUp(memberSingUpRequest);
@@ -94,7 +94,6 @@ public class MemberController {
                     @RequestBody UpdateProfileImageRequest updateProfileImageRequest
             ) {
         memberService.updateProfileImage(member, updateProfileImageRequest);
-
         return ResponseEntity
                 .noContent()
                 .build();

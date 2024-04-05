@@ -22,7 +22,7 @@ public class SearchBoardRequest {
     private Place place;
 
     @Builder
-    public SearchBoardRequest(Long lowestTemperature, Long highestTemperature, Weather weather, RoadCondition roadCondition, Place place, boolean mine) {
+    public SearchBoardRequest(Long lowestTemperature, Long highestTemperature, Weather weather, RoadCondition roadCondition, Place place) {
         this.lowestTemperature = lowestTemperature;
         this.highestTemperature = highestTemperature;
         this.weather = weather;
@@ -30,9 +30,5 @@ public class SearchBoardRequest {
         this.place = place;
     }
 
-    public static SearchBoardRequest.SearchBoardRequestBuilder searchBoardRequestBuilder(Long lowestTemperature, Long highestTemperature) {
-        return SearchBoardRequest.builder()
-                .lowestTemperature(lowestTemperature)
-                .highestTemperature(highestTemperature);
-    }
+
 }

@@ -33,7 +33,6 @@ public class BoardService {
 
     @Transactional
     public Long save(Member member, SaveBoardRequest saveBoardRequest) {
-
         Board board = saveBoardRequest.toBoard(member);
         addImage(saveBoardRequest, board);
         addBoardCloth(saveBoardRequest, board);
@@ -76,7 +75,6 @@ public class BoardService {
 
     public Page<BoardResponse> findAllByLikeIncrease(Pageable pageable, Long memberId, String type) {
         DateRangeType dateRange = DateRangeType.of(type);
-
         Page<Board> boards = boardRepository.findAllByLikeIncrease(pageable, dateRange.getStartDate(), dateRange.getEndDate());
         List<BoardResponse> boardResponseList = boards.stream()
                 .map(board -> board.toBoardResponse(memberId))
@@ -85,11 +83,9 @@ public class BoardService {
         return boardResponsePage;
     }
 
-
     @Transactional
     public Long update(Long boardId, UpdateBoardRequest updateBoardRequest) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BoardNotFoundException(boardId));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
         board.updateBoard(updateBoardRequest);
         return board.getId();
     }

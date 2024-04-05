@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberSingUpRequest {
+public class MemberSignUpRequest {
 
     @Pattern(
             regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
@@ -26,7 +26,7 @@ public class MemberSingUpRequest {
     private String nickname;
 
     @Builder
-    public MemberSingUpRequest(String password, String email, String nickname) {
+    public MemberSignUpRequest(String password, String email, String nickname) {
         this.password = password;
         this.email = email;
         this.nickname = nickname;

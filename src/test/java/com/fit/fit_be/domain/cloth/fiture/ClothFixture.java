@@ -6,6 +6,10 @@ import com.fit.fit_be.domain.cloth.model.Cloth;
 import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.member.model.Member;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class ClothFixture {
 
     private static final String INFORMATION = "슈프림 티셔츠";
@@ -19,6 +23,12 @@ public class ClothFixture {
                 .information(INFORMATION)
                 .size(SIZE_M)
                 .build();
+    }
+
+    public static List<Cloth> createCloths(Member member, int count) {
+        return IntStream.range(0, count)
+                .mapToObj(i -> ClothFixture.createCloth(member))
+                .collect(Collectors.toList());
     }
 
     public static SaveClothRequest createSaveClothRequest() {

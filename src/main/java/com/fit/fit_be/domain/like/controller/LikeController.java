@@ -35,7 +35,6 @@ public class LikeController {
                 log.info("낙관적 락 실패. 재시도 중...");
             }
         }
-
         log.error("최대 재시도 횟수에 도달함. 작업 수행 불가.");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -46,7 +45,6 @@ public class LikeController {
                     @PathVariable("boardId") Long boardId,
                     @AuthenticationPrincipal Member member
             ) {
-
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {
                 likeService.delete(boardId, member);
@@ -55,7 +53,6 @@ public class LikeController {
                 log.info("낙관적 락 실패. 재시도 중...");
             }
         }
-
         log.error("최대 재시도 횟수에 도달함. 작업 수행 불가.");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

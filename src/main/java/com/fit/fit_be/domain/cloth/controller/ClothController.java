@@ -3,6 +3,7 @@ package com.fit.fit_be.domain.cloth.controller;
 import com.fit.fit_be.domain.cloth.dto.request.SaveClothRequest;
 import com.fit.fit_be.domain.cloth.dto.request.UpdateClothRequest;
 import com.fit.fit_be.domain.cloth.dto.response.ClothResponse;
+import com.fit.fit_be.domain.cloth.model.ClothType;
 import com.fit.fit_be.domain.cloth.service.ClothService;
 import com.fit.fit_be.domain.member.model.Member;
 import com.fit.fit_be.global.common.response.ApiResponse;
@@ -34,7 +35,6 @@ public class ClothController {
                     HttpServletRequest request
             ) {
         Long id = clothService.save(member, saveClothRequest);
-
         return ResponseEntity
                 .created(URI.create(request.getRequestURI() + "/" + id))
                 .body(new ApiResponse<>(id));
@@ -46,17 +46,15 @@ public class ClothController {
                     @PathVariable("clothId") Long clothId
             ) {
         ClothResponse response = clothService.findById(clothId);
-
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
     @GetMapping(value = "/cloths", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<Page<ClothResponse>>> findAllByType
             (
-                    @RequestParam("type") String type,
+                    @RequestParam("type") ClothType type,
                     @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
                     @AuthenticationPrincipal Member member
-
             ) {
         Page<ClothResponse> responsePage = clothService.findAllByType(type, member.getId(), pageable);
         return ResponseEntity.ok(new ApiResponse<>(responsePage));
@@ -69,7 +67,6 @@ public class ClothController {
                     @RequestBody UpdateClothRequest updateClothRequest
             ) {
         Long id = clothService.update(boardId, updateClothRequest);
-
         return ResponseEntity
                 .noContent()
                 .header(HttpHeaders.LOCATION, "/cloths/" + id)
@@ -81,9 +78,7 @@ public class ClothController {
             (
                     @PathVariable("clothId") Long boardId
             ) {
-
         clothService.delete(boardId);
-
         return ResponseEntity
                 .noContent()
                 .build();
