@@ -8,10 +8,10 @@ import java.util.Objects;
 
 public enum RoadCondition {
 
-    NORMAL("평범한"),
-    SLIPPERY("미끄러운"),
-    SNOW("눈길"),
-    SAND("모래");
+    NORMAL("normal"),
+    SLIPPERY("slippery"),
+    SNOW("snow"),
+    SAND("sand");
 
     private final String roadCondition;
 

@@ -7,10 +7,10 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public enum Weather {
-    SUNNY("맑음"),
-    CLOUDY("흐림"),
-    SNOWY("눈"),
-    RAIN("비");
+    SUNNY("sunny"),
+    CLOUDY("cloudy"),
+    SNOWY("snowy"),
+    RAIN("rain");
 
     private final String weather;
 

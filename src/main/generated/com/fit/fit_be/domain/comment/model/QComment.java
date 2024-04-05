@@ -40,7 +40,7 @@ public class QComment extends EntityPathBase<Comment> {
 
     public final com.fit.fit_be.domain.member.model.QMember member;
 
-    public final StringPath parentCommentNickname = createString("parentCommentNickname");
+    public final NumberPath<Long> parentCommentId = createNumber("parentCommentId", Long.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

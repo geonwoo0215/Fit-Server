@@ -8,11 +8,11 @@ import java.util.Objects;
 
 public enum Place {
 
-    WEDDING("결혼식"),
-    OUTING("외출"),
-    SPORTS("스포츠"),
-    FESTIVAL("페스티발"),
-    PARTY("파티");
+    WEDDING("wedding"),
+    OUTING("outing"),
+    SPORTS("sports"),
+    FESTIVAL("festival"),
+    PARTY("party");
 
     private final String place;
 
