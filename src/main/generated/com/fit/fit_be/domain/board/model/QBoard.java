@@ -31,6 +31,8 @@ public class QBoard extends EntityPathBase<Board> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    public final DatePath<java.time.LocalDate> createdDate = createDate("createdDate", java.time.LocalDate.class);
+
     //inherited
     public final BooleanPath deleted = _super.deleted;
 
@@ -51,6 +53,8 @@ public class QBoard extends EntityPathBase<Board> {
     public final BooleanPath open = createBoolean("open");
 
     public final EnumPath<Place> place = createEnum("place", Place.class);
+
+    public final BooleanPath ranking = createBoolean("ranking");
 
     public final EnumPath<RoadCondition> roadCondition = createEnum("roadCondition", RoadCondition.class);
 

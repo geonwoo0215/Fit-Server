@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,12 +72,11 @@ public class BoardController {
     }
 
     @GetMapping(value = "/boards/ranking", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> findAllByLikeIncrease(
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> findAllByLikeIncrease(
             @AuthenticationPrincipal Member member,
-            @RequestParam(value = "type") String type,
-            @PageableDefault Pageable pageable
+            @RequestParam(value = "type") String type
     ) {
-        Page<BoardResponse> responsePage = boardService.findAllByLikeIncrease(pageable, member.getId(), type);
+        List<BoardResponse> responsePage = boardService.findAllByLikeIncrease(member.getId(), type);
         return ResponseEntity.ok(new ApiResponse<>(responsePage));
     }
 

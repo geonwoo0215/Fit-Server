@@ -57,7 +57,7 @@ import java.util.Optional;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class BoardSearchControllerTest {
+public class BoardRankControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -120,6 +120,7 @@ public class BoardSearchControllerTest {
     @Transactional
     void 전채공개설정되고_게시글_랭킹_조회_API_성공() throws Exception {
 
+        auditingHandler.setDateTimeProvider(dateTimeProvider);
         BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.now().minusDays(1L)));
 
         List<Board> boards = BoardFixture.createBoards(member, 10);
@@ -164,10 +165,10 @@ public class BoardSearchControllerTest {
                                 PayloadDocumentation.fieldWithPath("data.content[].weather").type(JsonFieldType.STRING).description("날씨"),
                                 PayloadDocumentation.fieldWithPath("data.content[].roadCondition").type(JsonFieldType.STRING).description("바닥상태"),
                                 PayloadDocumentation.fieldWithPath("data.content[].place").type(JsonFieldType.STRING).description("장소"),
-                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].id").type(JsonFieldType.NUMBER).description("옷 아이디"),
-                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].type").type(JsonFieldType.STRING).description("옷 타입"),
-                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].information").type(JsonFieldType.STRING).description("옷 정보"),
-                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].size").type(JsonFieldType.STRING).description("옷 사이즈"),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].id").type(JsonFieldType.NUMBER).description("옷 아이디").optional(),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].type").type(JsonFieldType.STRING).description("옷 타입").optional(),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].information").type(JsonFieldType.STRING).description("옷 정보").optional(),
+                                PayloadDocumentation.fieldWithPath("data.content[].clothResponses[].size").type(JsonFieldType.STRING).description("옷 사이즈").optional(),
                                 PayloadDocumentation.fieldWithPath("data.content[].imageUrls").type(JsonFieldType.ARRAY).description("게시글 이미지 URL"),
                                 PayloadDocumentation.fieldWithPath("data.content[].like").type(JsonFieldType.BOOLEAN).description("게시글 좋아요"),
                                 PayloadDocumentation.fieldWithPath("data.content[].nickname").type(JsonFieldType.STRING).description("게시글 작성자 닉네임"),

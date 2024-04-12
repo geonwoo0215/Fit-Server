@@ -17,6 +17,7 @@ import com.fit.fit_be.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,14 +74,13 @@ public class BoardService {
         return boardResponsePage;
     }
 
-    public Page<BoardResponse> findAllByLikeIncrease(Pageable pageable, Long memberId, String type) {
+    public List<BoardResponse> findAllByLikeIncrease(Long memberId, String type) {
         DateRangeType dateRange = DateRangeType.of(type);
-        Page<Board> boards = boardRepository.findAllByLikeIncrease(pageable, dateRange.getStartDate(), dateRange.getEndDate());
+        List<Board> boards = boardRepository.findAllByLikeIncrease(PageRequest.of(0, 20), dateRange.getDates());
         List<BoardResponse> boardResponseList = boards.stream()
                 .map(board -> board.toBoardResponse(memberId))
                 .toList();
-        PageImpl<BoardResponse> boardResponsePage = new PageImpl<>(boardResponseList, pageable, boards.getTotalElements());
-        return boardResponsePage;
+        return boardResponseList;
     }
 
     @Transactional

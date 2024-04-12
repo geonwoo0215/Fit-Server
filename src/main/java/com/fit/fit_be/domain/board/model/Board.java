@@ -14,7 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.annotations.OptimisticLocking;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +43,12 @@ public class Board extends BaseEntity {
 
     private boolean open;
 
+    private boolean ranking;
+
     private int likeCount;
+
+    @CreatedDate
+    private LocalDate createdDate;
 
     @Version
     private Long version;
@@ -65,13 +72,14 @@ public class Board extends BaseEntity {
     private List<Likes> likes = new ArrayList<>();
 
     @Builder
-    public Board(Long id, Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, Weather weather, RoadCondition roadCondition, Place place) {
+    public Board(Long id, Member member, String content, Long lowestTemperature, Long highestTemperature, boolean open, boolean ranking, Weather weather, RoadCondition roadCondition, Place place) {
         this.id = id;
         this.member = member;
         this.content = content;
         this.lowestTemperature = lowestTemperature;
         this.highestTemperature = highestTemperature;
         this.open = open;
+        this.ranking = ranking;
         this.weather = weather;
         this.roadCondition = roadCondition;
         this.place = place;

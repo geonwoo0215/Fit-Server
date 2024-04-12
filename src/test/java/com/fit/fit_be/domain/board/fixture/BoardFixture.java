@@ -20,9 +20,25 @@ public class BoardFixture {
     private static final Long LOWEST_TEMPERATURE = -7L;
     private static final Long HIGHEST_TEMPERATURE = 2L;
     private static final Boolean OPEN = true;
+    private static final Boolean RANKING = true;
 
     public static Board createBoard(Member member) {
         return Board.builder()
+                .member(member)
+                .content(CONTENT)
+                .lowestTemperature(LOWEST_TEMPERATURE)
+                .highestTemperature(HIGHEST_TEMPERATURE)
+                .open(OPEN)
+                .ranking(RANKING)
+                .weather(Weather.SUNNY)
+                .roadCondition(RoadCondition.NORMAL)
+                .place(Place.OUTING)
+                .build();
+    }
+
+    public static Board createBoard(Member member, Long id) {
+        return Board.builder()
+                .id(id)
                 .member(member)
                 .content(CONTENT)
                 .lowestTemperature(LOWEST_TEMPERATURE)
@@ -37,6 +53,12 @@ public class BoardFixture {
     public static List<Board> createBoards(Member member, int count) {
         return IntStream.range(0, count)
                 .mapToObj(i -> BoardFixture.createBoard(member))
+                .collect(Collectors.toList());
+    }
+
+    public static List<Board> createBoardsWithId(Member member, int count) {
+        return IntStream.range(0, count)
+                .mapToObj(i -> BoardFixture.createBoard(member, (long) i))
                 .collect(Collectors.toList());
     }
 
