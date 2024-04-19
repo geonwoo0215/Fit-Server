@@ -47,9 +47,6 @@ public class Board extends BaseEntity {
 
     private int likeCount;
 
-    @CreatedDate
-    private LocalDate createdDate;
-
     @Version
     private Long version;
 
@@ -61,6 +58,9 @@ public class Board extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Place place;
+
+    @CreatedDate
+    private LocalDate createdDate;
 
     @OneToMany(mappedBy = "board", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Image> images = new ArrayList<>();

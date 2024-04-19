@@ -29,6 +29,8 @@ public class QLikes extends EntityPathBase<Likes> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    public final DatePath<java.time.LocalDate> createdDate = createDate("createdDate", java.time.LocalDate.class);
+
     //inherited
     public final BooleanPath deleted = _super.deleted;
 

@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -22,6 +25,9 @@ public class Likes extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+
+    @CreatedDate
+    private LocalDate createdDate;
 
     private Likes(Board board, Member member) {
         this.board = board;
