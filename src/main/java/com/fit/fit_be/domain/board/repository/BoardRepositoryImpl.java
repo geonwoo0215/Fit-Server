@@ -22,19 +22,27 @@ public class BoardRepositoryImpl implements BoardCustomRepository {
     public Page<Board> findAllByCondition(SearchBoardRequest searchBoardRequest, Pageable pageable) {
         BooleanBuilder conditionsBuilder = new BooleanBuilder();
 
-        conditionsBuilder.and(temperatureConditions(searchBoardRequest));
-        conditionsBuilder.and(QBoard.board.open.isTrue());
         conditionsBuilder.and(weatherCondition(searchBoardRequest));
         conditionsBuilder.and(roadConditionCondition(searchBoardRequest));
         conditionsBuilder.and(placeCondition(searchBoardRequest));
+        conditionsBuilder.and(QBoard.board.open.isTrue());
+        conditionsBuilder.and(lowestTemperatureConditions(searchBoardRequest));
+        conditionsBuilder.and(highestTemperatureConditions(searchBoardRequest));
 
-        List<Board> content = jpaQueryFactory
-                .selectFrom(QBoard.board)
+        List<Long> ids = jpaQueryFactory
+                .select(QBoard.board.id)
                 .from(QBoard.board)
                 .where(conditionsBuilder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        List<Board> content = jpaQueryFactory
+                .select(QBoard.board)
+                .from(QBoard.board)
+                .where(QBoard.board.id.in(ids))
+                .fetch();
+
 
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(QBoard.board.count())
@@ -44,12 +52,18 @@ public class BoardRepositoryImpl implements BoardCustomRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    private BooleanBuilder temperatureConditions(SearchBoardRequest searchBoardRequest) {
+    private BooleanBuilder lowestTemperatureConditions(SearchBoardRequest searchBoardRequest) {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (searchBoardRequest.getLowestTemperature() != null) {
             builder.and(QBoard.board.lowestTemperature.goe(searchBoardRequest.getLowestTemperature()));
         }
+
+        return builder;
+    }
+
+    private BooleanBuilder highestTemperatureConditions(SearchBoardRequest searchBoardRequest) {
+        BooleanBuilder builder = new BooleanBuilder();
 
         if (searchBoardRequest.getHighestTemperature() != null) {
             builder.and(QBoard.board.highestTemperature.loe(searchBoardRequest.getHighestTemperature()));
