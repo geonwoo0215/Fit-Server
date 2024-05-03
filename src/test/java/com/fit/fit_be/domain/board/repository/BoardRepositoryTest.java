@@ -62,13 +62,11 @@ class BoardRepositoryTest {
     @Test
     @Rollback(value = false)
     void 더미데이터() {
-
-
         Member member = MemberFixture.createMember();
         memberRepository.save(member);
 
         List<Board> boardList = new ArrayList<>();
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 10000; i++) {
             Board board = BoardFixture.createBoard(member);
             boardList.add(board);
         }
@@ -83,7 +81,7 @@ class BoardRepositoryTest {
         Member member = MemberFixture.createMember();
         memberRepository.save(member);
         List<Likes> likesList = new ArrayList<>();
-        for (int i = 0; i < 1000 - 1; i++) {
+        for (int i = 100000; i < 130000; i++) {
             Board board = BoardFixture.createBoard(member, (long) (i + 1));
             for (int j = 0; j < ((int) (Math.random() * 10) + 1); j++) {
                 Likes likes = LikeFixture.createLike(board, member);
@@ -101,7 +99,7 @@ class BoardRepositoryTest {
         memberRepository.save(member);
 
         auditingHandler.setDateTimeProvider(dateTimeProvider);
-        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.now().minusDays(8L)));
+        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.now().minusDays(5L)));
 
         int page = 0;
         int size = 20;

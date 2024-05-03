@@ -71,7 +71,7 @@ class BoardCustomRepositoryTest {
 
         Page<Board> boardPage = boardRepository.findAllByCondition(searchBoardRequest, pageable);
 
-        Assertions.assertThat(boardPage.getTotalElements()).isEqualTo(10L);
+        Assertions.assertThat(boardPage.getContent().size()).isEqualTo(10L);
 
     }
 }

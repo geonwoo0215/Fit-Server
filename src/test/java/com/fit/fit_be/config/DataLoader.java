@@ -26,8 +26,8 @@ public class DataLoader {
 
     public void batchInsertBoard(List<Board> boards) {
         String sql = "INSERT INTO board (deleted, like_count, open, highest_temperature, " +
-                "lowest_temperature, member_id, content, place, road_condition, weather, created_at, ranking) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "lowest_temperature, member_id, content, place, road_condition, weather, created_at, ranking, created_date) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -43,8 +43,10 @@ public class DataLoader {
                 ps.setString(8, board.getPlace().toString());
                 ps.setString(9, board.getRoadCondition().toString());
                 ps.setString(10, board.getWeather().toString());
-                ps.setTimestamp(11, Timestamp.valueOf(LocalDateTime.now().minusDays(1L)));
+                ps.setTimestamp(11, Timestamp.valueOf(LocalDateTime.now().minusDays(0L)));
                 ps.setBoolean(12, board.isRanking());
+                ps.setDate(13, Date.valueOf(LocalDate.now().minusDays(0L)));
+
             }
 
             @Override

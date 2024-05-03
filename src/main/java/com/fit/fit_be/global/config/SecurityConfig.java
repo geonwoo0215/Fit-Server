@@ -54,7 +54,7 @@ public class SecurityConfig {
 
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/boards/**").authenticated()
+                        //.requestMatchers("/boards/**").authenticated()
                         .requestMatchers("/members/my-profile").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(sessionManagement -> sessionManagement

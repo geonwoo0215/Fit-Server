@@ -30,9 +30,9 @@ public class BoardFixture {
                 .highestTemperature(HIGHEST_TEMPERATURE)
                 .open(OPEN)
                 .ranking(RANKING)
-                .weather(Weather.SUNNY)
-                .roadCondition(RoadCondition.NORMAL)
-                .place(Place.OUTING)
+                .weather(Weather.CLOUDY)
+                .roadCondition(RoadCondition.SNOW)
+                .place(Place.PARTY)
                 .build();
     }
 
@@ -94,9 +94,9 @@ public class BoardFixture {
         return SearchBoardRequest.builder()
                 .lowestTemperature(LOWEST_TEMPERATURE)
                 .highestTemperature(HIGHEST_TEMPERATURE)
-                .weather(Weather.SUNNY)
-                .roadCondition(RoadCondition.NORMAL)
-                .place(Place.OUTING)
+                .weather(Weather.CLOUDY)
+                .roadCondition(RoadCondition.SNOW)
+                .place(Place.PARTY)
                 .build();
     }
 
