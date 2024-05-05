@@ -14,7 +14,7 @@ public class WebClientService {
     @Value("${weather.service-key}")
     private String serviceKey;
 
-    public VilageFcstResponses get() {
+    public VilageFcstResponses get(String baseDate, String baseTime, int nx, int ny) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/getVilageFcst")
@@ -22,10 +22,10 @@ public class WebClientService {
                         .queryParam("numOfRows", 12)
                         .queryParam("pageNo", 1)
                         .queryParam("dataType", "JSON")
-                        .queryParam("base_date")
-                        .queryParam("base_time")
-                        .queryParam("nx")
-                        .queryParam("ny")
+                        .queryParam("base_date",baseDate)
+                        .queryParam("base_time",baseTime)
+                        .queryParam("nx",nx)
+                        .queryParam("ny",ny)
                         .build())
                 .retrieve()
                 .bodyToMono(VilageFcstResponses.class)
