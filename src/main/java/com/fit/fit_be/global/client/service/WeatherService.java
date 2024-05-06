@@ -2,13 +2,11 @@ package com.fit.fit_be.global.client.service;
 
 import com.fit.fit_be.global.client.dto.VilageFcstResponse;
 import com.fit.fit_be.global.client.dto.VilageFcstResponses;
-import com.fit.fit_be.global.client.dto.request.WeatherRequest;
 import com.fit.fit_be.global.client.dto.response.WeatherResponse;
 import com.fit.fit_be.global.client.webclient.service.WebClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,13 +18,13 @@ public class WeatherService {
 
     private final WebClientService webClientService;
 
-    public WeatherResponse getWeather(Integer nx, Integer) {
+    public WeatherResponse getWeather(Integer nx, Integer ny) {
         LocalDateTime now = LocalDateTime.now();
 
         String baseDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = now.format(DateTimeFormatter.ofPattern("HH00"));
 
-        VilageFcstResponses vilageFcstResponses = webClientService.get(baseDate,baseTime,weatherRequest.getNx(),weatherRequest.getNy());
+        VilageFcstResponses vilageFcstResponses = webClientService.get(baseDate, baseTime, nx, ny);
 
         List<VilageFcstResponse> items = vilageFcstResponses.getItems();
 

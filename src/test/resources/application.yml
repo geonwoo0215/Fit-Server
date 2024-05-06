@@ -29,3 +29,6 @@ issuer: testissuer
 expiration-hours: 1
 secret-key: testsecretkeytestsecretkeytestsecretkeytestsecretkeytestsecretkeytestsecretkeytestsecretkeytestsecretkey
 refresh-expiration-hours: 1
+
+weather:
+  service-key: apikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikeyapikey
