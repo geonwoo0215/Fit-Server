@@ -1,11 +1,9 @@
 package com.fit.fit_be.global.client.dto.fixture;
 
 import com.fit.fit_be.global.client.dto.VilageFcstResponse;
-import com.fit.fit_be.global.client.dto.VilageFcstResponses;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class VilageFcstFixture {
 
@@ -33,13 +31,13 @@ public class VilageFcstFixture {
                 .build();
     }
 
-    public static VilageFcstResponses createVilageFcstResponses(List<VilageFcstResponse> vilageFcstResponse) {
-        return VilageFcstResponses.builder()
-                .dataType(DATA_TYPE)
-                .items(vilageFcstResponse)
-                .pageNo(PAGE_NO)
-                .numOfRows(NUM_OF_ROWS)
-                .totalCount(TOTAL_COUNT)
-                .build();
-    }
+//    public static VilageFcstResponses createVilageFcstResponses(List<VilageFcstResponse> vilageFcstResponse) {
+//        return VilageFcstResponses.builder()
+//                .dataType(DATA_TYPE)
+//                .items(vilageFcstResponse)
+//                .pageNo(PAGE_NO)
+//                .numOfRows(NUM_OF_ROWS)
+//                .totalCount(TOTAL_COUNT)
+//                .build();
+//    }
 }

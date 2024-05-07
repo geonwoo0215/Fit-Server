@@ -1,7 +1,7 @@
-package com.fit.fit_be.global.client.controller;
+package com.fit.fit_be.domain.weather.controller;
 
-import com.fit.fit_be.global.client.dto.response.WeatherResponse;
-import com.fit.fit_be.global.client.service.WeatherService;
+import com.fit.fit_be.domain.weather.dto.response.WeatherResponse;
+import com.fit.fit_be.domain.weather.service.WeatherService;
 import com.fit.fit_be.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class WeatherController {
 
     private final WeatherService weatherService;
-    
+
     @GetMapping("/weather")
     public ResponseEntity<ApiResponse<WeatherResponse>> getWeather
             (

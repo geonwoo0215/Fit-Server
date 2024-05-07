@@ -1,4 +1,4 @@
-package com.fit.fit_be.global.client.dto.request;
+package com.fit.fit_be.domain.weather.dto.request;
 
 import lombok.Getter;
 

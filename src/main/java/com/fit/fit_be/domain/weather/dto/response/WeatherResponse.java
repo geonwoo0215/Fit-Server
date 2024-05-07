@@ -1,7 +1,9 @@
-package com.fit.fit_be.global.client.dto.response;
+package com.fit.fit_be.domain.weather.dto.response;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class WeatherResponse {
 
     private String tmp;
