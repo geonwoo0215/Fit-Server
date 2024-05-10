@@ -30,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -59,37 +58,37 @@ class BoardRepositoryTest {
     @SpyBean
     AuditingHandler auditingHandler;
 
-    @Test
-    @Rollback(value = false)
-    void 더미데이터() {
-        Member member = MemberFixture.createMember();
-        memberRepository.save(member);
-
-        List<Board> boardList = new ArrayList<>();
-        for (int i = 0; i < 10000; i++) {
-            Board board = BoardFixture.createBoard(member);
-            boardList.add(board);
-        }
-        dataLoader.batchInsertBoard(boardList);
-    }
-
-    @Test
-    @Rollback(value = false)
-    void 더미데이터2() {
-
-
-        Member member = MemberFixture.createMember();
-        memberRepository.save(member);
-        List<Likes> likesList = new ArrayList<>();
-        for (int i = 100000; i < 130000; i++) {
-            Board board = BoardFixture.createBoard(member, (long) (i + 1));
-            for (int j = 0; j < ((int) (Math.random() * 10) + 1); j++) {
-                Likes likes = LikeFixture.createLike(board, member);
-                likesList.add(likes);
-            }
-        }
-        dataLoader.batchInsertLike(likesList);
-    }
+//    @Test
+//    @Rollback(value = false)
+//    void 더미데이터() {
+//        Member member = MemberFixture.createMember();
+//        memberRepository.save(member);
+//
+//        List<Board> boardList = new ArrayList<>();
+//        for (int i = 0; i < 1; i++) {
+//            Board board = BoardFixture.createBoard(member);
+//            boardList.add(board);
+//        }
+//        dataLoader.batchInsertBoard(boardList);
+//    }
+//
+//    @Test
+//    @Rollback(value = false)
+//    void 더미데이터2() {
+//
+//
+//        Member member = MemberFixture.createMember();
+//        memberRepository.save(member);
+//        List<Likes> likesList = new ArrayList<>();
+//        for (int i = 0; i < 0; i++) {
+//            Board board = BoardFixture.createBoard(member, (long) (i + 1));
+//            for (int j = 0; j < ((int) (Math.random() * 10) + 1); j++) {
+//                Likes likes = LikeFixture.createLike(board, member);
+//                likesList.add(likes);
+//            }
+//        }
+//        dataLoader.batchInsertLike(likesList);
+//    }
 
     @Test
     @Rollback(value = false)

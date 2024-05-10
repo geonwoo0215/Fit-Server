@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 
 public class BoardFixture {
 
-    private static final String CONTENT = "content";
+    private static final String CONTENT = "내용";
     private static final Long LOWEST_TEMPERATURE = -7L;
     private static final Long HIGHEST_TEMPERATURE = 2L;
     private static final Boolean OPEN = true;

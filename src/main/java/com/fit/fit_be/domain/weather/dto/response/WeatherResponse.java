@@ -14,11 +14,14 @@ public class WeatherResponse {
 
     private String wsd;
 
+    private String pcp;
+
     @Builder
-    public WeatherResponse(String tmp, String pop, String sky, String wsd) {
+    public WeatherResponse(String tmp, String pop, String sky, String wsd, String pcp) {
         this.tmp = tmp;
         this.pop = pop;
         this.sky = sky;
         this.wsd = wsd;
+        this.pcp = pcp;
     }
 }

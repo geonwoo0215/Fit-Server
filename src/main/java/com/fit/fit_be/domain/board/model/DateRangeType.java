@@ -49,4 +49,8 @@ public enum DateRangeType {
         }
         return formattedDates;
     }
+
+    public String getType() {
+        return type;
+    }
 }
