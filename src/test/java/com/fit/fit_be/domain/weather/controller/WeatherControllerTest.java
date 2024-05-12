@@ -1,4 +1,4 @@
-package com.fit.fit_be.global.client.controller;
+package com.fit.fit_be.domain.weather.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit.fit_be.domain.weather.ForecastTime;

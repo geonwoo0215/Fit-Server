@@ -6,9 +6,6 @@ import com.fit.fit_be.domain.board.dto.request.SaveBoardRequest;
 import com.fit.fit_be.domain.board.dto.request.UpdateBoardRequest;
 import com.fit.fit_be.domain.board.fixture.BoardFixture;
 import com.fit.fit_be.domain.board.model.Board;
-import com.fit.fit_be.domain.board.model.Place;
-import com.fit.fit_be.domain.board.model.RoadCondition;
-import com.fit.fit_be.domain.board.model.Weather;
 import com.fit.fit_be.domain.board.repository.BoardRepository;
 import com.fit.fit_be.domain.boardcloth.fixture.BoardClothFixture;
 import com.fit.fit_be.domain.boardcloth.model.BoardCloth;
@@ -200,11 +197,11 @@ class BoardControllerTest {
 
         Integer page = 0;
         Integer size = 5;
-        Long lowestTemperature = -20L;
-        Long highestTemperature = 10L;
-        String weather = Weather.SUNNY.getWeather();
-        String roadCondition = RoadCondition.NORMAL.getRoadCondition();
-        String place = Place.OUTING.getPlace();
+        Long lowestTemperature = board.getLowestTemperature();
+        Long highestTemperature = board.getHighestTemperature();
+        String weather = board.getWeather().getWeather();
+        String roadCondition = board.getRoadCondition().getRoadCondition();
+        String place = board.getPlace().getPlace();
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("page", String.valueOf(page));

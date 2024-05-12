@@ -2,11 +2,17 @@ package com.fit.fit_be.domain.weather.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "weather_area", indexes = @Index(name = "idx_gridx_gridy", columnList = "gridx, gridy"))
 public class WeatherArea {
 
     @Id

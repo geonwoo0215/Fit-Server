@@ -3,8 +3,10 @@ package com.fit.fit_be.global.client.webclient.service;
 import com.fit.fit_be.global.client.dto.WeatherFcstResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +29,11 @@ public class WebClientService {
                         .queryParam("ny", ny)
                         .build())
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException()))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException()))
                 .bodyToMono(WeatherFcstResponse.class)
                 .block();
 
     }
-
+    
 }

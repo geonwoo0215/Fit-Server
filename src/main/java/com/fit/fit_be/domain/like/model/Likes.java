@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "likes", indexes = @Index(name = "idx_created_date", columnList = "created_date"))
 public class Likes extends BaseEntity {
 
     @Id

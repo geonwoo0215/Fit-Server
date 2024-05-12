@@ -26,6 +26,10 @@ import java.util.stream.Collectors;
 @Getter
 @OptimisticLocking(type = OptimisticLockType.VERSION)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "board", indexes = {
+        @Index(name = "idx_created_date_ranking", columnList = "created_date, ranking"),
+        @Index(name = "idx_weather_road_condition_place_low_tem_high_tem", columnList = "weather, road_condition, place, lowest_temperature, highest_temperature")
+})
 public class Board extends BaseEntity {
 
     @Id
